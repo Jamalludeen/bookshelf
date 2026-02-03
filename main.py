@@ -64,3 +64,19 @@ def read_item(item_id: int, q: str = None):
     """
     return {"item_id": item_id, "query": q}
 
+
+@app.get("/books", response_model=List[Book])
+def list_books(tag: Optional[str] = None, limit: int = Query(10, ge=1, le=50)):
+    results = BOOKS
+    if tag:
+        results = [book for book in results if tag in book.tags]
+    return results[:limit]
+
+
+@app.get("/books/{book_id}", response_model=Book)
+def get_book(book_id: int):
+    for book in BOOKS:
+        if book.id == book_id:
+            return book
+    raise HTTPException(status_code=404, detail="Book not found")
+
