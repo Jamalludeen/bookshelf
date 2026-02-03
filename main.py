@@ -80,3 +80,16 @@ def get_book(book_id: int):
             return book
     raise HTTPException(status_code=404, detail="Book not found")
 
+
+@app.post("/books", response_model=Book, status_code=201)
+def create_book(payload: BookCreate):
+    next_id = max((book.id for book in BOOKS), default=0) + 1
+    book = Book(id=next_id, **payload.model_dump())
+    BOOKS.append(book)
+    return book
+
+
+@app.get("/math/sum")
+def add_numbers(a: int = Query(..., ge=-10_000, le=10_000), b: int = Query(..., ge=-10_000, le=10_000)):
+    return {"a": a, "b": b, "sum": a + b}
+
