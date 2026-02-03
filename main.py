@@ -49,3 +49,18 @@ def health_check():
 def echo_message(message: str = Query(..., min_length=1, max_length=200)):
     return {"echo": message}
 
+
+@app.get("/headers")
+def read_headers(user_agent: Optional[str] = Header(default=None)):
+    return {"user_agent": user_agent}
+
+@app.get("/items/{item_id}")
+def read_item(item_id: int, q: str = None):
+    """
+    Get an item by its ID.
+
+    - item_id: The unique identifier for the item (path parameter)
+    - q: Optional query string for filtering (query parameter)
+    """
+    return {"item_id": item_id, "query": q}
+
