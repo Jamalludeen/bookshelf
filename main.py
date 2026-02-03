@@ -38,3 +38,14 @@ BOOKS: List[Book] = [
 @app.get("/")
 def read_root():
     return {"message": "Hello, Guys!"}
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "timestamp": datetime.utcnow().isoformat() + "Z"}
+
+
+@app.get("/echo")
+def echo_message(message: str = Query(..., min_length=1, max_length=200)):
+    return {"echo": message}
+
