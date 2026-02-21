@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from .. import crud, database, schemas
@@ -13,7 +13,7 @@ def create_task(
     task: schemas.TaskCreate,
     db: Session = Depends(database.get_db),
 ):
-    return crud.create_user_task(db=db, task=task)
+    return crud.create_user_task(db=db, task=task, user_id=task.owner_id)
 
 @router.get("/", response_model=List[schemas.Task])
 def read_tasks(

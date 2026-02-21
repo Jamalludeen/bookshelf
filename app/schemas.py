@@ -8,7 +8,7 @@ class TaskBase(BaseModel):
     completed: bool = False
 
 class TaskCreate(TaskBase):
-    pass 
+    owner_id: int
 
 class Task(TaskBase):
     id: int
