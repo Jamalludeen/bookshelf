@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from typing import Optional
 from . import models, schemas
 from passlib.context import CryptContext
 
@@ -23,8 +24,11 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
-def get_tasks(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Task).offset(skip).limit(limit).all()
+def get_tasks(db: Session, skip: int = 0, limit: int = 100, completed: Optional[bool] = None):
+    query = db.query(models.Task)
+    if completed is not None:
+        query = query.filter(models.Task.completed == completed)
+    return query.offset(skip).limit(limit).all()
 
 
 def get_task_by_id(db: Session, task_id: int):
