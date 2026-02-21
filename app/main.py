@@ -1,9 +1,6 @@
 from fastapi import FastAPI
-# from . import models, database
-# from .routers import tasks
-import models
-import database
-from routers import tasks
+from . import database, models
+from .routers import tasks
 
 # Create Database Tables
 models.Base.metadata.create_all(bind=database.engine)
