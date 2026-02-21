@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from .. import crud, database, schemas
@@ -23,3 +23,19 @@ def read_tasks(
 ):
     tasks = crud.get_tasks(db, skip=skip, limit=limit)
     return tasks
+
+
+@router.get("/{task_id}", response_model=schemas.Task)
+def read_task(task_id: int, db: Session = Depends(database.get_db)):
+    task = crud.get_task_by_id(db=db, task_id=task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
+@router.patch("/{task_id}/complete", response_model=schemas.Task)
+def complete_task(task_id: int, db: Session = Depends(database.get_db)):
+    task = crud.set_task_completed(db=db, task_id=task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
