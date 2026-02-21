@@ -52,3 +52,13 @@ def set_task_completed(db: Session, task_id: int):
     db.refresh(db_task)
     return db_task
 
+
+def delete_task(db: Session, task_id: int):
+    db_task = get_task_by_id(db=db, task_id=task_id)
+    if not db_task:
+        return None
+
+    db.delete(db_task)
+    db.commit()
+    return db_task
+
