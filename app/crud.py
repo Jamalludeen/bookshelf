@@ -13,8 +13,22 @@ def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
+def get_user_by_id(db: Session, user_id: int):
+    return db.query(models.User).filter(models.User.id == user_id).first()
+
+
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
+
+
+def get_user_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return (
+        db.query(models.Task)
+        .filter(models.Task.owner_id == user_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = pwd_context.hash(user.password)
@@ -40,6 +54,35 @@ def create_user_task(db: Session, task: schemas.TaskCreate, user_id: int):
     db.commit()
     db.refresh(db_task)
     return db_task
+
+
+def update_task(db: Session, task_id: int, task_update: schemas.TaskUpdate):
+    db_task = get_task_by_id(db=db, task_id=task_id)
+    if not db_task:
+        return None
+
+    update_data = task_update.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_task, field, value)
+
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+
+def get_task_summary(db: Session, owner_id: Optional[int] = None):
+    base_query = db.query(models.Task)
+    if owner_id is not None:
+        base_query = base_query.filter(models.Task.owner_id == owner_id)
+
+    total = base_query.count()
+    completed_query = db.query(models.Task).filter(models.Task.completed.is_(True))
+    if owner_id is not None:
+        completed_query = completed_query.filter(models.Task.owner_id == owner_id)
+
+    completed = completed_query.count()
+    pending = total - completed
+    return {"total": total, "completed": completed, "pending": pending}
 
 
 def set_task_completed(db: Session, task_id: int):
