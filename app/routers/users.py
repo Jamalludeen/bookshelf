@@ -24,9 +24,17 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
 def read_users(
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
+    username_query: str = Query(default="", max_length=50),
+    email_query: str = Query(default="", max_length=255),
     db: Session = Depends(database.get_db),
 ):
-    return crud.get_users(db=db, skip=skip, limit=limit)
+    return crud.get_users(
+        db=db,
+        skip=skip,
+        limit=limit,
+        username_query=username_query or None,
+        email_query=email_query or None,
+    )
 
 
 @router.get("/{user_id}", response_model=schemas.User)

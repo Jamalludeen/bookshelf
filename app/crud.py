@@ -17,8 +17,19 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
+def get_users(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    username_query: Optional[str] = None,
+    email_query: Optional[str] = None,
+):
+    query = db.query(models.User)
+    if username_query:
+        query = query.filter(models.User.username.ilike(f"%{username_query}%"))
+    if email_query:
+        query = query.filter(models.User.email.ilike(f"%{email_query}%"))
+    return query.offset(skip).limit(limit).all()
 
 
 def get_user_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100):
