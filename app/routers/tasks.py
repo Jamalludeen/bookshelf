@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from .. import crud, database, schemas
@@ -8,11 +8,13 @@ router = APIRouter(
     tags=["tasks"]
 )
 
-@router.post("/", response_model=schemas.Task)
+@router.post("/", response_model=schemas.Task, status_code=status.HTTP_201_CREATED)
 def create_task(
     task: schemas.TaskCreate,
     db: Session = Depends(database.get_db),
 ):
+    if not crud.get_user_by_id(db=db, user_id=task.owner_id):
+        raise HTTPException(status_code=404, detail="Owner not found")
     return crud.create_user_task(db=db, task=task, user_id=task.owner_id)
 
 @router.get("/", response_model=List[schemas.Task])
