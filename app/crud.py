@@ -38,10 +38,35 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
-def get_tasks(db: Session, skip: int = 0, limit: int = 100, completed: Optional[bool] = None):
+def get_tasks(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    completed: Optional[bool] = None,
+    owner_id: Optional[int] = None,
+    title_query: Optional[str] = None,
+    sort_by: str = "id",
+    sort_dir: str = "asc",
+):
     query = db.query(models.Task)
     if completed is not None:
         query = query.filter(models.Task.completed == completed)
+    if owner_id is not None:
+        query = query.filter(models.Task.owner_id == owner_id)
+    if title_query:
+        query = query.filter(models.Task.title.ilike(f"%{title_query}%"))
+
+    sort_map = {
+        "id": models.Task.id,
+        "title": models.Task.title,
+        "completed": models.Task.completed,
+    }
+    sort_column = sort_map.get(sort_by, models.Task.id)
+    if sort_dir == "desc":
+        query = query.order_by(sort_column.desc())
+    else:
+        query = query.order_by(sort_column.asc())
+
     return query.offset(skip).limit(limit).all()
 
 

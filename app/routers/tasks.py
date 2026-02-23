@@ -22,9 +22,22 @@ def read_tasks(
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
     completed: Optional[bool] = None,
+    owner_id: Optional[int] = Query(default=None, ge=1),
+    title_query: Optional[str] = Query(default=None, max_length=200),
+    sort_by: str = Query(default="id", regex="^(id|title|completed)$"),
+    sort_dir: str = Query(default="asc", regex="^(asc|desc)$"),
     db: Session = Depends(database.get_db)
 ):
-    tasks = crud.get_tasks(db, skip=skip, limit=limit, completed=completed)
+    tasks = crud.get_tasks(
+        db,
+        skip=skip,
+        limit=limit,
+        completed=completed,
+        owner_id=owner_id,
+        title_query=title_query,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
     return tasks
 
 
