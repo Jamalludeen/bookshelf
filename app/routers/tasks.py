@@ -36,6 +36,18 @@ def read_task(task_id: int, db: Session = Depends(database.get_db)):
     return task
 
 
+@router.patch("/{task_id}", response_model=schemas.Task)
+def update_task(
+    task_id: int,
+    task_update: schemas.TaskUpdate,
+    db: Session = Depends(database.get_db),
+):
+    task = crud.update_task(db=db, task_id=task_id, task_update=task_update)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
 @router.patch("/{task_id}/complete", response_model=schemas.Task)
 def complete_task(task_id: int, db: Session = Depends(database.get_db)):
     task = crud.set_task_completed(db=db, task_id=task_id)
