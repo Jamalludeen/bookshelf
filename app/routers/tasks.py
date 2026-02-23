@@ -41,6 +41,14 @@ def read_tasks(
     return tasks
 
 
+@router.get("/summary", response_model=schemas.TaskSummary)
+def read_task_summary(
+    owner_id: Optional[int] = Query(default=None, ge=1),
+    db: Session = Depends(database.get_db),
+):
+    return crud.get_task_summary(db=db, owner_id=owner_id)
+
+
 @router.get("/{task_id}", response_model=schemas.Task)
 def read_task(task_id: int, db: Session = Depends(database.get_db)):
     task = crud.get_task_by_id(db=db, task_id=task_id)
