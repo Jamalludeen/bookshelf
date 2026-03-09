@@ -77,7 +77,7 @@ def complete_task(task_id: int, db: Session = Depends(database.get_db)):
     return task
 
 
-@router.delete("/{task_id}")
+@router.delete("/{task_id}", response_model=schemas.Message, status_code=status.HTTP_200_OK)
 def delete_task(task_id: int, db: Session = Depends(database.get_db)):
     task = crud.delete_task(db=db, task_id=task_id)
     if not task:
