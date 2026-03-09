@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from .. import crud, database, schemas
@@ -50,7 +50,7 @@ def read_task_summary(
 
 
 @router.get("/{task_id}", response_model=schemas.Task)
-def read_task(task_id: int, db: Session = Depends(database.get_db)):
+def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.get_task_by_id(db=db, task_id=task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -59,7 +59,7 @@ def read_task(task_id: int, db: Session = Depends(database.get_db)):
 
 @router.patch("/{task_id}", response_model=schemas.Task)
 def update_task(
-    task_id: int,
+    task_id: int = Path(..., ge=1),
     task_update: schemas.TaskUpdate,
     db: Session = Depends(database.get_db),
 ):
@@ -70,7 +70,7 @@ def update_task(
 
 
 @router.patch("/{task_id}/complete", response_model=schemas.Task)
-def complete_task(task_id: int, db: Session = Depends(database.get_db)):
+def complete_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.set_task_completed(db=db, task_id=task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -78,7 +78,7 @@ def complete_task(task_id: int, db: Session = Depends(database.get_db)):
 
 
 @router.delete("/{task_id}", response_model=schemas.Message, status_code=status.HTTP_200_OK)
-def delete_task(task_id: int, db: Session = Depends(database.get_db)):
+def delete_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.delete_task(db=db, task_id=task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
