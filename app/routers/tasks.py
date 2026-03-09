@@ -65,6 +65,9 @@ def update_task(
     task_update: schemas.TaskUpdate,
     db: Session = Depends(database.get_db),
 ):
+    if not task_update.dict(exclude_unset=True):
+        raise HTTPException(status_code=400, detail="No fields provided for update")
+
     task = crud.update_task(db=db, task_id=task_id, task_update=task_update)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
