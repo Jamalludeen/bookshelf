@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy.orm import Session
 
 from .. import crud, database, schemas
@@ -26,6 +26,7 @@ def read_users(
     limit: int = Query(default=100, ge=1, le=100),
     username_query: str = Query(default="", max_length=50),
     email_query: str = Query(default="", max_length=255),
+    is_active: bool | None = Query(default=None),
     db: Session = Depends(database.get_db),
 ):
     return crud.get_users(
@@ -34,11 +35,12 @@ def read_users(
         limit=limit,
         username_query=username_query or None,
         email_query=email_query or None,
+        is_active=is_active,
     )
 
 
 @router.get("/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(database.get_db)):
+def read_user(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     user = crud.get_user_by_id(db=db, user_id=user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -47,7 +49,7 @@ def read_user(user_id: int, db: Session = Depends(database.get_db)):
 
 @router.get("/{user_id}/tasks", response_model=List[schemas.Task])
 def read_user_tasks(
-    user_id: int,
+    user_id: int = Path(..., ge=1),
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
     db: Session = Depends(database.get_db),

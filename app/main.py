@@ -9,6 +9,10 @@ app = FastAPI(
     title="TaskMaster API",
     description="A simple API for managing users and tasks.",
     version="0.1.0",
+    openapi_tags=[
+        {"name": "tasks", "description": "Task management operations"},
+        {"name": "users", "description": "User management operations"},
+    ],
 )
 
 # app.include_router(auth.router)
@@ -23,3 +27,8 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+
+@app.get("/version")
+def version():
+    return {"version": app.version}

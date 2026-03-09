@@ -25,21 +25,23 @@ Base URLs are listed with common query parameters.
 ### Users
 
 - POST /users
-- GET /users?skip=0&limit=100&username_query=&email_query=
+- GET /users?skip=0&limit=100&username_query=&email_query=&is_active=
 - GET /users/{user_id}
 - GET /users/{user_id}/tasks?skip=0&limit=100
 
 ### Tasks
 
 - POST /tasks
-- GET /tasks?skip=0&limit=100&completed=&owner_id=&title_query=&sort_by=&sort_dir=
+- GET /tasks?skip=0&limit=100&completed=&owner_id=&title_query=&description_query=&sort_by=&sort_dir=
 - GET /tasks/summary?owner_id=
 - GET /tasks/{task_id}
 - PATCH /tasks/{task_id}
 - PATCH /tasks/{task_id}/complete
+- PATCH /tasks/{task_id}/reopen
 - DELETE /tasks/{task_id}
 
 ### System
 
 - GET /
 - GET /health
+- GET /version

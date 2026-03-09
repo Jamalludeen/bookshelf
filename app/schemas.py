@@ -43,4 +43,8 @@ class TaskSummary(BaseModel):
     total: int
     completed: int
     pending: int
+
+
+class Message(BaseModel):
+    detail: str
         

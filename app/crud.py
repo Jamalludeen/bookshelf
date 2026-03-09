@@ -23,12 +23,15 @@ def get_users(
     limit: int = 100,
     username_query: Optional[str] = None,
     email_query: Optional[str] = None,
+    is_active: Optional[bool] = None,
 ):
     query = db.query(models.User)
     if username_query:
         query = query.filter(models.User.username.ilike(f"%{username_query}%"))
     if email_query:
         query = query.filter(models.User.email.ilike(f"%{email_query}%"))
+    if is_active is not None:
+        query = query.filter(models.User.is_active == is_active)
     return query.offset(skip).limit(limit).all()
 
 
@@ -56,6 +59,7 @@ def get_tasks(
     completed: Optional[bool] = None,
     owner_id: Optional[int] = None,
     title_query: Optional[str] = None,
+    description_query: Optional[str] = None,
     sort_by: str = "id",
     sort_dir: str = "asc",
 ):
@@ -66,6 +70,8 @@ def get_tasks(
         query = query.filter(models.Task.owner_id == owner_id)
     if title_query:
         query = query.filter(models.Task.title.ilike(f"%{title_query}%"))
+    if description_query:
+        query = query.filter(models.Task.description.ilike(f"%{description_query}%"))
 
     sort_map = {
         "id": models.Task.id,
@@ -74,9 +80,9 @@ def get_tasks(
     }
     sort_column = sort_map.get(sort_by, models.Task.id)
     if sort_dir == "desc":
-        query = query.order_by(sort_column.desc())
+        query = query.order_by(sort_column.desc(), models.Task.id.desc())
     else:
-        query = query.order_by(sort_column.asc())
+        query = query.order_by(sort_column.asc(), models.Task.id.asc())
 
     return query.offset(skip).limit(limit).all()
 
@@ -127,6 +133,17 @@ def set_task_completed(db: Session, task_id: int):
         return None
 
     db_task.completed = True
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+
+def set_task_incomplete(db: Session, task_id: int):
+    db_task = get_task_by_id(db=db, task_id=task_id)
+    if not db_task:
+        return None
+
+    db_task.completed = False
     db.commit()
     db.refresh(db_task)
     return db_task
