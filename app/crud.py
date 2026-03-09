@@ -23,12 +23,15 @@ def get_users(
     limit: int = 100,
     username_query: Optional[str] = None,
     email_query: Optional[str] = None,
+    is_active: Optional[bool] = None,
 ):
     query = db.query(models.User)
     if username_query:
         query = query.filter(models.User.username.ilike(f"%{username_query}%"))
     if email_query:
         query = query.filter(models.User.email.ilike(f"%{email_query}%"))
+    if is_active is not None:
+        query = query.filter(models.User.is_active == is_active)
     return query.offset(skip).limit(limit).all()
 
 

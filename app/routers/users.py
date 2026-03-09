@@ -26,6 +26,7 @@ def read_users(
     limit: int = Query(default=100, ge=1, le=100),
     username_query: str = Query(default="", max_length=50),
     email_query: str = Query(default="", max_length=255),
+    is_active: bool | None = Query(default=None),
     db: Session = Depends(database.get_db),
 ):
     return crud.get_users(
@@ -34,6 +35,7 @@ def read_users(
         limit=limit,
         username_query=username_query or None,
         email_query=email_query or None,
+        is_active=is_active,
     )
 
 
