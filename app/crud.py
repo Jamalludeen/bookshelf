@@ -138,6 +138,17 @@ def set_task_completed(db: Session, task_id: int):
     return db_task
 
 
+def set_task_incomplete(db: Session, task_id: int):
+    db_task = get_task_by_id(db=db, task_id=task_id)
+    if not db_task:
+        return None
+
+    db_task.completed = False
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+
 def delete_task(db: Session, task_id: int):
     db_task = get_task_by_id(db=db, task_id=task_id)
     if not db_task:

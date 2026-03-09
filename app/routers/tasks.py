@@ -82,6 +82,14 @@ def complete_task(task_id: int = Path(..., ge=1), db: Session = Depends(database
     return task
 
 
+@router.patch("/{task_id}/reopen", response_model=schemas.Task)
+def reopen_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    task = crud.set_task_incomplete(db=db, task_id=task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
 @router.delete("/{task_id}", response_model=schemas.Message, status_code=status.HTTP_200_OK)
 def delete_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.delete_task(db=db, task_id=task_id)
