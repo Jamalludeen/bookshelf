@@ -24,6 +24,7 @@ def read_tasks(
     completed: Optional[bool] = None,
     owner_id: Optional[int] = Query(default=None, ge=1),
     title_query: Optional[str] = Query(default=None, max_length=200),
+    description_query: Optional[str] = Query(default=None, max_length=1000),
     sort_by: str = Query(default="id", regex="^(id|title|completed)$"),
     sort_dir: str = Query(default="asc", regex="^(asc|desc)$"),
     db: Session = Depends(database.get_db)
@@ -35,6 +36,7 @@ def read_tasks(
         completed=completed,
         owner_id=owner_id,
         title_query=title_query,
+        description_query=description_query,
         sort_by=sort_by,
         sort_dir=sort_dir,
     )

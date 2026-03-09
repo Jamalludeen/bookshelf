@@ -59,6 +59,7 @@ def get_tasks(
     completed: Optional[bool] = None,
     owner_id: Optional[int] = None,
     title_query: Optional[str] = None,
+    description_query: Optional[str] = None,
     sort_by: str = "id",
     sort_dir: str = "asc",
 ):
@@ -69,6 +70,8 @@ def get_tasks(
         query = query.filter(models.Task.owner_id == owner_id)
     if title_query:
         query = query.filter(models.Task.title.ilike(f"%{title_query}%"))
+    if description_query:
+        query = query.filter(models.Task.description.ilike(f"%{description_query}%"))
 
     sort_map = {
         "id": models.Task.id,
