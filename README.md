@@ -26,6 +26,7 @@ Base URLs are listed with common query parameters.
 
 - POST /users
 - GET /users?skip=0&limit=100&username_query=&email_query=&is_active=
+- PATCH /users/{user_id}/status
 - GET /users/{user_id}
 - GET /users/{user_id}/tasks?skip=0&limit=100
 
@@ -38,6 +39,8 @@ Base URLs are listed with common query parameters.
 - PATCH /tasks/{task_id}
 - PATCH /tasks/{task_id}/complete
 - PATCH /tasks/{task_id}/reopen
+- PATCH /tasks/bulk/complete
+- PATCH /tasks/bulk/reopen
 - DELETE /tasks/{task_id}
 
 ### System
@@ -45,3 +48,8 @@ Base URLs are listed with common query parameters.
 - GET /
 - GET /health
 - GET /version
+
+## Response headers
+
+- `GET /users` and `GET /tasks` include `X-Total-Count` for total records matching filters.
+- All responses include `X-Request-ID` and `X-Process-Time` for request tracing and timing.

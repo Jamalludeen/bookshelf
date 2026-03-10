@@ -70,8 +70,8 @@ def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get
 
 @router.patch("/{task_id}", response_model=schemas.Task)
 def update_task(
-    task_id: int = Path(..., ge=1),
     task_update: schemas.TaskUpdate,
+    task_id: int = Path(..., ge=1),
     db: Session = Depends(database.get_db),
 ):
     if not task_update.dict(exclude_unset=True):
