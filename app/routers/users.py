@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
 from sqlalchemy.orm import Session
 
 from .. import crud, database, schemas
@@ -22,6 +22,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
 
 @router.get("/", response_model=List[schemas.User])
 def read_users(
+    response: Response,
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
     username_query: str = Query(default="", max_length=50),
@@ -29,7 +30,7 @@ def read_users(
     is_active: bool | None = Query(default=None),
     db: Session = Depends(database.get_db),
 ):
-    return crud.get_users(
+    users = crud.get_users(
         db=db,
         skip=skip,
         limit=limit,
@@ -37,6 +38,14 @@ def read_users(
         email_query=email_query or None,
         is_active=is_active,
     )
+    total = crud.count_users(
+        db=db,
+        username_query=username_query or None,
+        email_query=email_query or None,
+        is_active=is_active,
+    )
+    response.headers["X-Total-Count"] = str(total)
+    return users
 
 
 @router.get("/{user_id}", response_model=schemas.User)

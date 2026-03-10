@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from .. import crud, database, schemas
@@ -19,6 +19,7 @@ def create_task(
 
 @router.get("/", response_model=List[schemas.Task])
 def read_tasks(
+    response: Response,
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
     completed: Optional[bool] = None,
@@ -40,6 +41,14 @@ def read_tasks(
         sort_by=sort_by,
         sort_dir=sort_dir,
     )
+    total = crud.count_tasks(
+        db=db,
+        completed=completed,
+        owner_id=owner_id,
+        title_query=title_query,
+        description_query=description_query,
+    )
+    response.headers["X-Total-Count"] = str(total)
     return tasks
 
 
