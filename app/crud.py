@@ -60,8 +60,8 @@ def get_tasks(
     owner_id: Optional[int] = None,
     title_query: Optional[str] = None,
     description_query: Optional[str] = None,
-    sort_by: str = "id",
-    sort_dir: str = "asc",
+    sort_by: schemas.TaskSortBy = "id",
+    sort_dir: schemas.TaskSortDir = "asc",
 ):
     query = db.query(models.Task)
     if completed is not None:

@@ -1,5 +1,9 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import List, Optional
+from typing import List, Optional, Literal
+
+
+TaskSortBy = Literal["id", "title", "completed"]
+TaskSortDir = Literal["asc", "desc"]
 
 
 class TaskBase(BaseModel):

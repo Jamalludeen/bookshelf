@@ -25,8 +25,8 @@ def read_tasks(
     owner_id: Optional[int] = Query(default=None, ge=1),
     title_query: Optional[str] = Query(default=None, max_length=200),
     description_query: Optional[str] = Query(default=None, max_length=1000),
-    sort_by: str = Query(default="id", regex="^(id|title|completed)$"),
-    sort_dir: str = Query(default="asc", regex="^(asc|desc)$"),
+    sort_by: schemas.TaskSortBy = Query(default="id"),
+    sort_dir: schemas.TaskSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db)
 ):
     tasks = crud.get_tasks(
