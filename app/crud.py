@@ -52,6 +52,17 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+
+def update_user_status(db: Session, user_id: int, is_active: bool):
+    db_user = get_user_by_id(db=db, user_id=user_id)
+    if not db_user:
+        return None
+
+    db_user.is_active = is_active
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
 def get_tasks(
     db: Session,
     skip: int = 0,

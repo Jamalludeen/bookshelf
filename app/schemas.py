@@ -34,6 +34,10 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=128)
 
+
+class UserStatusUpdate(BaseModel):
+    is_active: bool
+
 class User(UserBase):
     id: int
     is_active: bool

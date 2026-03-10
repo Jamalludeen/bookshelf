@@ -58,3 +58,15 @@ def read_user_tasks(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return crud.get_user_tasks(db=db, user_id=user_id, skip=skip, limit=limit)
+
+
+@router.patch("/{user_id}/status", response_model=schemas.User)
+def update_user_status(
+    payload: schemas.UserStatusUpdate,
+    user_id: int = Path(..., ge=1),
+    db: Session = Depends(database.get_db),
+):
+    user = crud.update_user_status(db=db, user_id=user_id, is_active=payload.is_active)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
