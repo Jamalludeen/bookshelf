@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
+
 from . import database, models
 from .routers import tasks, users
 
@@ -26,7 +29,21 @@ def root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    try:
+        with database.engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except SQLAlchemyError:
+        return {
+            "status": "degraded",
+            "database": "unreachable",
+            "version": app.version,
+        }
+
+    return {
+        "status": "ok",
+        "database": "reachable",
+        "version": app.version,
+    }
 
 
 @app.get("/version")
