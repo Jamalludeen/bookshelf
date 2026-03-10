@@ -90,6 +90,28 @@ def reopen_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.g
     return task
 
 
+@router.patch("/bulk/complete", response_model=List[schemas.Task])
+def complete_tasks_bulk(
+    payload: schemas.TaskBulkUpdateRequest,
+    db: Session = Depends(database.get_db),
+):
+    tasks = crud.set_tasks_completed(db=db, task_ids=payload.task_ids)
+    if not tasks:
+        raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    return tasks
+
+
+@router.patch("/bulk/reopen", response_model=List[schemas.Task])
+def reopen_tasks_bulk(
+    payload: schemas.TaskBulkUpdateRequest,
+    db: Session = Depends(database.get_db),
+):
+    tasks = crud.set_tasks_incomplete(db=db, task_ids=payload.task_ids)
+    if not tasks:
+        raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    return tasks
+
+
 @router.delete("/{task_id}", response_model=schemas.Message, status_code=status.HTTP_200_OK)
 def delete_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.delete_task(db=db, task_id=task_id)

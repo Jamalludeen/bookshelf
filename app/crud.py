@@ -160,6 +160,34 @@ def set_task_incomplete(db: Session, task_id: int):
     return db_task
 
 
+def set_tasks_completed(db: Session, task_ids: list[int]):
+    tasks = db.query(models.Task).filter(models.Task.id.in_(task_ids)).all()
+    if not tasks:
+        return []
+
+    for task in tasks:
+        task.completed = True
+    db.commit()
+
+    for task in tasks:
+        db.refresh(task)
+    return tasks
+
+
+def set_tasks_incomplete(db: Session, task_ids: list[int]):
+    tasks = db.query(models.Task).filter(models.Task.id.in_(task_ids)).all()
+    if not tasks:
+        return []
+
+    for task in tasks:
+        task.completed = False
+    db.commit()
+
+    for task in tasks:
+        db.refresh(task)
+    return tasks
+
+
 def delete_task(db: Session, task_id: int):
     db_task = get_task_by_id(db=db, task_id=task_id)
     if not db_task:
