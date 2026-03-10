@@ -1,5 +1,9 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import List, Optional
+from typing import List, Optional, Literal
+
+
+TaskSortBy = Literal["id", "title", "completed"]
+TaskSortDir = Literal["asc", "desc"]
 
 
 class TaskBase(BaseModel):
@@ -16,6 +20,10 @@ class TaskUpdate(BaseModel):
     description: Optional[str] = Field(default=None, max_length=1000)
     completed: Optional[bool] = None
 
+
+class TaskBulkUpdateRequest(BaseModel):
+    task_ids: List[int] = Field(min_items=1)
+
 class Task(TaskBase):
     id: int
     owner_id: int
@@ -29,6 +37,10 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=128)
+
+
+class UserStatusUpdate(BaseModel):
+    is_active: bool
 
 class User(UserBase):
     id: int

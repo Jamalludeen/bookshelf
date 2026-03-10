@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from .. import crud, database, schemas
@@ -19,14 +19,15 @@ def create_task(
 
 @router.get("/", response_model=List[schemas.Task])
 def read_tasks(
+    response: Response,
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
     completed: Optional[bool] = None,
     owner_id: Optional[int] = Query(default=None, ge=1),
     title_query: Optional[str] = Query(default=None, max_length=200),
     description_query: Optional[str] = Query(default=None, max_length=1000),
-    sort_by: str = Query(default="id", regex="^(id|title|completed)$"),
-    sort_dir: str = Query(default="asc", regex="^(asc|desc)$"),
+    sort_by: schemas.TaskSortBy = Query(default="id"),
+    sort_dir: schemas.TaskSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db)
 ):
     tasks = crud.get_tasks(
@@ -40,6 +41,14 @@ def read_tasks(
         sort_by=sort_by,
         sort_dir=sort_dir,
     )
+    total = crud.count_tasks(
+        db=db,
+        completed=completed,
+        owner_id=owner_id,
+        title_query=title_query,
+        description_query=description_query,
+    )
+    response.headers["X-Total-Count"] = str(total)
     return tasks
 
 
@@ -61,8 +70,8 @@ def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get
 
 @router.patch("/{task_id}", response_model=schemas.Task)
 def update_task(
-    task_id: int = Path(..., ge=1),
     task_update: schemas.TaskUpdate,
+    task_id: int = Path(..., ge=1),
     db: Session = Depends(database.get_db),
 ):
     if not task_update.dict(exclude_unset=True):
@@ -88,6 +97,28 @@ def reopen_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.g
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     return task
+
+
+@router.patch("/bulk/complete", response_model=List[schemas.Task])
+def complete_tasks_bulk(
+    payload: schemas.TaskBulkUpdateRequest,
+    db: Session = Depends(database.get_db),
+):
+    tasks = crud.set_tasks_completed(db=db, task_ids=payload.task_ids)
+    if not tasks:
+        raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    return tasks
+
+
+@router.patch("/bulk/reopen", response_model=List[schemas.Task])
+def reopen_tasks_bulk(
+    payload: schemas.TaskBulkUpdateRequest,
+    db: Session = Depends(database.get_db),
+):
+    tasks = crud.set_tasks_incomplete(db=db, task_ids=payload.task_ids)
+    if not tasks:
+        raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    return tasks
 
 
 @router.delete("/{task_id}", response_model=schemas.Message, status_code=status.HTTP_200_OK)
