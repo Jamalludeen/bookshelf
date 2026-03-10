@@ -1,3 +1,6 @@
+from time import perf_counter
+from uuid import uuid4
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -23,6 +26,17 @@ app = FastAPI(
 # app.include_router(auth.router)
 app.include_router(tasks.router)
 app.include_router(users.router)
+
+
+@app.middleware("http")
+async def add_observability_headers(request: Request, call_next):
+    request_id = request.headers.get("x-request-id", str(uuid4()))
+    start_time = perf_counter()
+    response = await call_next(request)
+    process_time = perf_counter() - start_time
+    response.headers["X-Request-ID"] = request_id
+    response.headers["X-Process-Time"] = f"{process_time:.6f}"
+    return response
 
 
 @app.exception_handler(HTTPException)
