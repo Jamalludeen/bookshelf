@@ -60,6 +60,10 @@ def get_user_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100):
         .all()
     )
 
+
+def count_user_tasks(db: Session, user_id: int):
+    return db.query(models.Task).filter(models.Task.owner_id == user_id).count()
+
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = pwd_context.hash(user.password)
     db_user = models.User(email=user.email, username=user.username, hashed_password=hashed_password)
