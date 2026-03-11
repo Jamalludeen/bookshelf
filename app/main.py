@@ -1,7 +1,7 @@
 from time import perf_counter
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
@@ -63,15 +63,19 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to TaskMaster"}
+    return {
+        "message": "Welcome to TaskMaster",
+        "version": app.version,
+    }
 
 
 @app.get("/health")
-def health_check():
+def health_check(response: Response):
     try:
         with database.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
     except SQLAlchemyError:
+        response.status_code = 503
         return {
             "status": "degraded",
             "database": "unreachable",

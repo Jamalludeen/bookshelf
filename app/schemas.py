@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, conint
 from typing import List, Optional, Literal
 
 
@@ -22,7 +22,7 @@ class TaskUpdate(BaseModel):
 
 
 class TaskBulkUpdateRequest(BaseModel):
-    task_ids: List[int] = Field(min_items=1)
+    task_ids: List[conint(gt=0)] = Field(min_items=1)
 
 class Task(TaskBase):
     id: int

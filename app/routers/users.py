@@ -25,8 +25,8 @@ def read_users(
     response: Response,
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
-    username_query: str = Query(default="", max_length=50),
-    email_query: str = Query(default="", max_length=255),
+    username_query: str | None = Query(default=None, max_length=50),
+    email_query: str | None = Query(default=None, max_length=255),
     is_active: bool | None = Query(default=None),
     db: Session = Depends(database.get_db),
 ):
@@ -34,14 +34,14 @@ def read_users(
         db=db,
         skip=skip,
         limit=limit,
-        username_query=username_query or None,
-        email_query=email_query or None,
+        username_query=username_query,
+        email_query=email_query,
         is_active=is_active,
     )
     total = crud.count_users(
         db=db,
-        username_query=username_query or None,
-        email_query=email_query or None,
+        username_query=username_query,
+        email_query=email_query,
         is_active=is_active,
     )
     response.headers["X-Total-Count"] = str(total)
@@ -58,6 +58,7 @@ def read_user(user_id: int = Path(..., ge=1), db: Session = Depends(database.get
 
 @router.get("/{user_id}/tasks", response_model=List[schemas.Task])
 def read_user_tasks(
+    response: Response,
     user_id: int = Path(..., ge=1),
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
@@ -66,7 +67,9 @@ def read_user_tasks(
     user = crud.get_user_by_id(db=db, user_id=user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return crud.get_user_tasks(db=db, user_id=user_id, skip=skip, limit=limit)
+    tasks = crud.get_user_tasks(db=db, user_id=user_id, skip=skip, limit=limit)
+    response.headers["X-Total-Count"] = str(crud.count_user_tasks(db=db, user_id=user_id))
+    return tasks
 
 
 @router.patch("/{user_id}/status", response_model=schemas.User)

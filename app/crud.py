@@ -5,6 +5,17 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
+def _unique_task_ids(task_ids: list[int]) -> list[int]:
+    seen: set[int] = set()
+    unique_ids: list[int] = []
+    for task_id in task_ids:
+        if task_id in seen:
+            continue
+        seen.add(task_id)
+        unique_ids.append(task_id)
+    return unique_ids
+
 def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
@@ -55,10 +66,15 @@ def get_user_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100):
     return (
         db.query(models.Task)
         .filter(models.Task.owner_id == user_id)
+        .order_by(models.Task.id.asc())
         .offset(skip)
         .limit(limit)
         .all()
     )
+
+
+def count_user_tasks(db: Session, user_id: int):
+    return db.query(models.Task).filter(models.Task.owner_id == user_id).count()
 
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = pwd_context.hash(user.password)
@@ -196,7 +212,8 @@ def set_task_incomplete(db: Session, task_id: int):
 
 
 def set_tasks_completed(db: Session, task_ids: list[int]):
-    tasks = db.query(models.Task).filter(models.Task.id.in_(task_ids)).all()
+    unique_ids = _unique_task_ids(task_ids)
+    tasks = db.query(models.Task).filter(models.Task.id.in_(unique_ids)).all()
     if not tasks:
         return []
 
@@ -210,7 +227,8 @@ def set_tasks_completed(db: Session, task_ids: list[int]):
 
 
 def set_tasks_incomplete(db: Session, task_ids: list[int]):
-    tasks = db.query(models.Task).filter(models.Task.id.in_(task_ids)).all()
+    unique_ids = _unique_task_ids(task_ids)
+    tasks = db.query(models.Task).filter(models.Task.id.in_(unique_ids)).all()
     if not tasks:
         return []
 
