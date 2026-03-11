@@ -50,8 +50,15 @@ Base URLs are listed with common query parameters.
 - GET /version
 
 Notes:
+
 - `GET /` returns both a welcome message and API version.
 - `GET /health` returns `503` when the database is unreachable.
+- System endpoints are grouped under the `system` tag in OpenAPI docs.
+
+### Data handling
+
+- Usernames are trimmed before storage and uniqueness checks.
+- Emails are trimmed and lowercased before storage and uniqueness checks.
 
 ## Response headers
 
