@@ -11,10 +11,13 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.post("/", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
-    if crud.get_user_by_username(db=db, username=user.username):
+    normalized_username = user.username.strip()
+    normalized_email = user.email.strip().lower()
+
+    if crud.get_user_by_username(db=db, username=normalized_username):
         raise HTTPException(status_code=409, detail="Username already registered")
 
-    if crud.get_user_by_email(db=db, email=user.email):
+    if crud.get_user_by_email(db=db, email=normalized_email):
         raise HTTPException(status_code=409, detail="Email already registered")
 
     return crud.create_user(db=db, user=user)
