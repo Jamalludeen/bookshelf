@@ -25,8 +25,8 @@ def read_users(
     response: Response,
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
-    username_query: str = Query(default="", max_length=50),
-    email_query: str = Query(default="", max_length=255),
+    username_query: str | None = Query(default=None, max_length=50),
+    email_query: str | None = Query(default=None, max_length=255),
     is_active: bool | None = Query(default=None),
     db: Session = Depends(database.get_db),
 ):
@@ -34,14 +34,14 @@ def read_users(
         db=db,
         skip=skip,
         limit=limit,
-        username_query=username_query or None,
-        email_query=email_query or None,
+        username_query=username_query,
+        email_query=email_query,
         is_active=is_active,
     )
     total = crud.count_users(
         db=db,
-        username_query=username_query or None,
-        email_query=email_query or None,
+        username_query=username_query,
+        email_query=email_query,
         is_active=is_active,
     )
     response.headers["X-Total-Count"] = str(total)
