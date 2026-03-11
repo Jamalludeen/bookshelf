@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from . import database, models
+from . import database, models, schemas
 from .routers import tasks, users
 
 # Create Database Tables
@@ -62,7 +62,7 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
         },
     )
 
-@app.get("/", tags=["system"])
+@app.get("/", tags=["system"], response_model=schemas.RootInfo)
 def root():
     return {
         "message": "Welcome to TaskMaster",
@@ -70,7 +70,7 @@ def root():
     }
 
 
-@app.get("/health", tags=["system"])
+@app.get("/health", tags=["system"], response_model=schemas.HealthInfo)
 def health_check(response: Response):
     try:
         with database.engine.connect() as connection:
@@ -90,6 +90,6 @@ def health_check(response: Response):
     }
 
 
-@app.get("/version", tags=["system"])
+@app.get("/version", tags=["system"], response_model=schemas.VersionInfo)
 def version():
     return {"version": app.version}
