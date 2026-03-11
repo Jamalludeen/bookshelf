@@ -63,7 +63,10 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to TaskMaster"}
+    return {
+        "message": "Welcome to TaskMaster",
+        "version": app.version,
+    }
 
 
 @app.get("/health")
