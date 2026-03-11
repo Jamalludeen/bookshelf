@@ -49,7 +49,11 @@ Base URLs are listed with common query parameters.
 - GET /health
 - GET /version
 
+Notes:
+- `GET /` returns both a welcome message and API version.
+- `GET /health` returns `503` when the database is unreachable.
+
 ## Response headers
 
-- `GET /users` and `GET /tasks` include `X-Total-Count` for total records matching filters.
+- `GET /users`, `GET /users/{user_id}/tasks`, and `GET /tasks` include `X-Total-Count` for total records matching filters.
 - All responses include `X-Request-ID` and `X-Process-Time` for request tracing and timing.
