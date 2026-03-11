@@ -20,6 +20,7 @@ app = FastAPI(
     openapi_tags=[
         {"name": "tasks", "description": "Task management operations"},
         {"name": "users", "description": "User management operations"},
+        {"name": "system", "description": "System and diagnostics endpoints"},
     ],
 )
 
@@ -61,7 +62,7 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
         },
     )
 
-@app.get("/")
+@app.get("/", tags=["system"])
 def root():
     return {
         "message": "Welcome to TaskMaster",
@@ -69,7 +70,7 @@ def root():
     }
 
 
-@app.get("/health")
+@app.get("/health", tags=["system"])
 def health_check(response: Response):
     try:
         with database.engine.connect() as connection:
@@ -89,6 +90,6 @@ def health_check(response: Response):
     }
 
 
-@app.get("/version")
+@app.get("/version", tags=["system"])
 def version():
     return {"version": app.version}
