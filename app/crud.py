@@ -16,6 +16,14 @@ def _unique_task_ids(task_ids: list[int]) -> list[int]:
         unique_ids.append(task_id)
     return unique_ids
 
+
+def _normalize_text(value: str) -> str:
+    return value.strip()
+
+
+def _normalize_email(value: str) -> str:
+    return value.strip().lower()
+
 def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
@@ -78,7 +86,11 @@ def count_user_tasks(db: Session, user_id: int):
 
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = pwd_context.hash(user.password)
-    db_user = models.User(email=user.email, username=user.username, hashed_password=hashed_password)
+    db_user = models.User(
+        email=_normalize_email(user.email),
+        username=_normalize_text(user.username),
+        hashed_password=hashed_password,
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
