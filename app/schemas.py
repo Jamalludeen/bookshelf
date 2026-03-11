@@ -59,4 +59,19 @@ class TaskSummary(BaseModel):
 
 class Message(BaseModel):
     detail: str
+
+
+class RootInfo(BaseModel):
+    message: str
+    version: str
+
+
+class VersionInfo(BaseModel):
+    version: str
+
+
+class HealthInfo(BaseModel):
+    status: Literal["ok", "degraded"]
+    database: Literal["reachable", "unreachable"]
+    version: str
         
