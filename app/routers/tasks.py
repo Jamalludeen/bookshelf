@@ -8,6 +8,11 @@ router = APIRouter(
     tags=["tasks"]
 )
 
+
+def _ensure_unique_task_ids(task_ids: list[int]) -> None:
+    if len(task_ids) != len(set(task_ids)):
+        raise HTTPException(status_code=400, detail="task_ids must contain unique values")
+
 @router.post("/", response_model=schemas.Task, status_code=status.HTTP_201_CREATED)
 def create_task(
     task: schemas.TaskCreate,
@@ -104,6 +109,7 @@ def complete_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
     db: Session = Depends(database.get_db),
 ):
+    _ensure_unique_task_ids(payload.task_ids)
     tasks = crud.set_tasks_completed(db=db, task_ids=payload.task_ids)
     if not tasks:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
@@ -115,6 +121,7 @@ def reopen_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
     db: Session = Depends(database.get_db),
 ):
+    _ensure_unique_task_ids(payload.task_ids)
     tasks = crud.set_tasks_incomplete(db=db, task_ids=payload.task_ids)
     if not tasks:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
