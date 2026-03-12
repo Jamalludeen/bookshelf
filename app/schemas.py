@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, conint
+from pydantic import BaseModel, EmailStr, Field, conint, constr
 from typing import List, Optional, Literal
 
 
@@ -7,12 +7,12 @@ TaskSortDir = Literal["asc", "desc"]
 
 
 class TaskBase(BaseModel):
-    title: str = Field(min_length=1, max_length=200)
-    description: Optional[str] = Field(default=None, max_length=1000)
+    title: constr(strip_whitespace=True, min_length=1, max_length=200)
+    description: Optional[constr(max_length=1000)] = None
     completed: bool = False
 
 class TaskCreate(TaskBase):
-    owner_id: int
+    owner_id: conint(gt=0)
 
 
 class TaskUpdate(BaseModel):
@@ -32,7 +32,7 @@ class Task(TaskBase):
         orm_mode = True
 
 class UserBase(BaseModel):
-    username: str = Field(min_length=3, max_length=50)
+    username: constr(strip_whitespace=True, min_length=3, max_length=50)
     email: EmailStr
 
 class UserCreate(UserBase):
