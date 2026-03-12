@@ -24,6 +24,12 @@ def _normalize_text(value: str) -> str:
 def _normalize_email(value: str) -> str:
     return value.strip().lower()
 
+
+def _normalize_optional_text(value: Optional[str]) -> Optional[str]:
+    if value is None:
+        return None
+    return value.strip()
+
 def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
@@ -165,7 +171,10 @@ def get_task_by_id(db: Session, task_id: int):
     return db.query(models.Task).filter(models.Task.id == task_id).first()
 
 def create_user_task(db: Session, task: schemas.TaskCreate, user_id: int):
-    db_task = models.Task(**task.dict(), owner_id=user_id)
+    task_data = task.dict()
+    task_data["title"] = _normalize_text(task_data["title"])
+    task_data["description"] = _normalize_optional_text(task_data.get("description"))
+    db_task = models.Task(**task_data, owner_id=user_id)
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
@@ -178,6 +187,11 @@ def update_task(db: Session, task_id: int, task_update: schemas.TaskUpdate):
         return None
 
     update_data = task_update.dict(exclude_unset=True)
+    if "title" in update_data and update_data["title"] is not None:
+        update_data["title"] = _normalize_text(update_data["title"])
+    if "description" in update_data:
+        update_data["description"] = _normalize_optional_text(update_data["description"])
+
     for field, value in update_data.items():
         setattr(db_task, field, value)
 
