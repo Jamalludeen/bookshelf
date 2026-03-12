@@ -49,6 +49,8 @@ def get_users(
     username_query: Optional[str] = None,
     email_query: Optional[str] = None,
     is_active: Optional[bool] = None,
+    sort_by: schemas.UserSortBy = "id",
+    sort_dir: schemas.UserSortDir = "asc",
 ):
     query = db.query(models.User)
     if username_query:
@@ -57,6 +59,19 @@ def get_users(
         query = query.filter(models.User.email.ilike(f"%{email_query}%"))
     if is_active is not None:
         query = query.filter(models.User.is_active == is_active)
+
+    sort_map = {
+        "id": models.User.id,
+        "username": models.User.username,
+        "email": models.User.email,
+        "is_active": models.User.is_active,
+    }
+    sort_column = sort_map.get(sort_by, models.User.id)
+    if sort_dir == "desc":
+        query = query.order_by(sort_column.desc(), models.User.id.desc())
+    else:
+        query = query.order_by(sort_column.asc(), models.User.id.asc())
+
     return query.offset(skip).limit(limit).all()
 
 

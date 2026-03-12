@@ -31,6 +31,8 @@ def read_users(
     username_query: str | None = Query(default=None, max_length=50),
     email_query: str | None = Query(default=None, max_length=255),
     is_active: bool | None = Query(default=None),
+    sort_by: schemas.UserSortBy = Query(default="id"),
+    sort_dir: schemas.UserSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db),
 ):
     users = crud.get_users(
@@ -40,6 +42,8 @@ def read_users(
         username_query=username_query,
         email_query=email_query,
         is_active=is_active,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
     )
     total = crud.count_users(
         db=db,
