@@ -8,6 +8,18 @@ router = APIRouter(
     tags=["tasks"]
 )
 
+
+def _normalize_optional_query(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip()
+    return normalized or None
+
+
+def _ensure_unique_task_ids(task_ids: list[int]) -> None:
+    if len(task_ids) != len(set(task_ids)):
+        raise HTTPException(status_code=400, detail="task_ids must contain unique values")
+
 @router.post("/", response_model=schemas.Task, status_code=status.HTTP_201_CREATED)
 def create_task(
     task: schemas.TaskCreate,
@@ -30,14 +42,16 @@ def read_tasks(
     sort_dir: schemas.TaskSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db)
 ):
+    normalized_title_query = _normalize_optional_query(title_query)
+    normalized_description_query = _normalize_optional_query(description_query)
     tasks = crud.get_tasks(
         db,
         skip=skip,
         limit=limit,
         completed=completed,
         owner_id=owner_id,
-        title_query=title_query,
-        description_query=description_query,
+        title_query=normalized_title_query,
+        description_query=normalized_description_query,
         sort_by=sort_by,
         sort_dir=sort_dir,
     )
@@ -45,8 +59,8 @@ def read_tasks(
         db=db,
         completed=completed,
         owner_id=owner_id,
-        title_query=title_query,
-        description_query=description_query,
+        title_query=normalized_title_query,
+        description_query=normalized_description_query,
     )
     response.headers["X-Total-Count"] = str(total)
     return tasks
@@ -104,6 +118,7 @@ def complete_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
     db: Session = Depends(database.get_db),
 ):
+    _ensure_unique_task_ids(payload.task_ids)
     tasks = crud.set_tasks_completed(db=db, task_ids=payload.task_ids)
     if not tasks:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
@@ -115,6 +130,7 @@ def reopen_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
     db: Session = Depends(database.get_db),
 ):
+    _ensure_unique_task_ids(payload.task_ids)
     tasks = crud.set_tasks_incomplete(db=db, task_ids=payload.task_ids)
     if not tasks:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")

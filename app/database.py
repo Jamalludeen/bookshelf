@@ -1,6 +1,7 @@
+from collections.abc import Generator
+
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 
@@ -19,7 +20,9 @@ SessionLocal = sessionmaker(
 
 Base = declarative_base()
 
-def get_db():
+
+def get_db() -> Generator[Session, None, None]:
+    """Provide a transactional database session for each request."""
     db = SessionLocal()
     try:
         yield db

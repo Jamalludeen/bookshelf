@@ -16,6 +16,20 @@ def _unique_task_ids(task_ids: list[int]) -> list[int]:
         unique_ids.append(task_id)
     return unique_ids
 
+
+def _normalize_text(value: str) -> str:
+    return value.strip()
+
+
+def _normalize_email(value: str) -> str:
+    return value.strip().lower()
+
+
+def _normalize_optional_text(value: Optional[str]) -> Optional[str]:
+    if value is None:
+        return None
+    return value.strip()
+
 def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
@@ -35,6 +49,8 @@ def get_users(
     username_query: Optional[str] = None,
     email_query: Optional[str] = None,
     is_active: Optional[bool] = None,
+    sort_by: schemas.UserSortBy = "id",
+    sort_dir: schemas.UserSortDir = "asc",
 ):
     query = db.query(models.User)
     if username_query:
@@ -43,6 +59,19 @@ def get_users(
         query = query.filter(models.User.email.ilike(f"%{email_query}%"))
     if is_active is not None:
         query = query.filter(models.User.is_active == is_active)
+
+    sort_map = {
+        "id": models.User.id,
+        "username": models.User.username,
+        "email": models.User.email,
+        "is_active": models.User.is_active,
+    }
+    sort_column = sort_map.get(sort_by, models.User.id)
+    if sort_dir == "desc":
+        query = query.order_by(sort_column.desc(), models.User.id.desc())
+    else:
+        query = query.order_by(sort_column.asc(), models.User.id.asc())
+
     return query.offset(skip).limit(limit).all()
 
 
@@ -78,7 +107,11 @@ def count_user_tasks(db: Session, user_id: int):
 
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = pwd_context.hash(user.password)
-    db_user = models.User(email=user.email, username=user.username, hashed_password=hashed_password)
+    db_user = models.User(
+        email=_normalize_email(user.email),
+        username=_normalize_text(user.username),
+        hashed_password=hashed_password,
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -153,7 +186,10 @@ def get_task_by_id(db: Session, task_id: int):
     return db.query(models.Task).filter(models.Task.id == task_id).first()
 
 def create_user_task(db: Session, task: schemas.TaskCreate, user_id: int):
-    db_task = models.Task(**task.dict(), owner_id=user_id)
+    task_data = task.dict()
+    task_data["title"] = _normalize_text(task_data["title"])
+    task_data["description"] = _normalize_optional_text(task_data.get("description"))
+    db_task = models.Task(**task_data, owner_id=user_id)
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
@@ -166,6 +202,11 @@ def update_task(db: Session, task_id: int, task_update: schemas.TaskUpdate):
         return None
 
     update_data = task_update.dict(exclude_unset=True)
+    if "title" in update_data and update_data["title"] is not None:
+        update_data["title"] = _normalize_text(update_data["title"])
+    if "description" in update_data:
+        update_data["description"] = _normalize_optional_text(update_data["description"])
+
     for field, value in update_data.items():
         setattr(db_task, field, value)
 

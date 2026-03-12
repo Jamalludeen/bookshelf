@@ -1,4 +1,5 @@
 from time import perf_counter
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Request, Response
@@ -7,7 +8,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from . import database, models
+from . import database, models, schemas
 from .routers import tasks, users
 
 # Create Database Tables
@@ -17,9 +18,12 @@ app = FastAPI(
     title="TaskMaster API",
     description="A simple API for managing users and tasks.",
     version="0.1.0",
+    contact={"name": "TaskMaster Maintainers"},
+    license_info={"name": "MIT"},
     openapi_tags=[
         {"name": "tasks", "description": "Task management operations"},
         {"name": "users", "description": "User management operations"},
+        {"name": "system", "description": "System and diagnostics endpoints"},
     ],
 )
 
@@ -61,7 +65,7 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
         },
     )
 
-@app.get("/")
+@app.get("/", tags=["system"], response_model=schemas.RootInfo)
 def root():
     return {
         "message": "Welcome to TaskMaster",
@@ -69,26 +73,29 @@ def root():
     }
 
 
-@app.get("/health")
+@app.get("/health", tags=["system"], response_model=schemas.HealthInfo)
 def health_check(response: Response):
+    checked_at = datetime.now(timezone.utc)
     try:
         with database.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
-    except SQLAlchemyError:
+    except (SQLAlchemyError, Exception):
         response.status_code = 503
         return {
             "status": "degraded",
             "database": "unreachable",
             "version": app.version,
+            "checked_at": checked_at,
         }
 
     return {
         "status": "ok",
         "database": "reachable",
         "version": app.version,
+        "checked_at": checked_at,
     }
 
 
-@app.get("/version")
+@app.get("/version", tags=["system"], response_model=schemas.VersionInfo)
 def version():
     return {"version": app.version}
