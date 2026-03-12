@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, conint, constr
 from typing import List, Optional, Literal
 
@@ -76,4 +77,5 @@ class HealthInfo(BaseModel):
     status: Literal["ok", "degraded"]
     database: Literal["reachable", "unreachable"]
     version: str
+    checked_at: datetime
         

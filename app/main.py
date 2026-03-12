@@ -1,4 +1,5 @@
 from time import perf_counter
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Request, Response
@@ -74,21 +75,24 @@ def root():
 
 @app.get("/health", tags=["system"], response_model=schemas.HealthInfo)
 def health_check(response: Response):
+    checked_at = datetime.now(timezone.utc)
     try:
         with database.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
-    except SQLAlchemyError:
+    except (SQLAlchemyError, Exception):
         response.status_code = 503
         return {
             "status": "degraded",
             "database": "unreachable",
             "version": app.version,
+            "checked_at": checked_at,
         }
 
     return {
         "status": "ok",
         "database": "reachable",
         "version": app.version,
+        "checked_at": checked_at,
     }
 
 
