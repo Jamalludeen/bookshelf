@@ -9,6 +9,13 @@ from .. import crud, database, schemas
 router = APIRouter(prefix="/users", tags=["users"])
 
 
+def _normalize_optional_query(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip()
+    return normalized or None
+
+
 @router.post("/", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     normalized_username = user.username.strip()
@@ -35,20 +42,22 @@ def read_users(
     sort_dir: schemas.UserSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db),
 ):
+    normalized_username_query = _normalize_optional_query(username_query)
+    normalized_email_query = _normalize_optional_query(email_query)
     users = crud.get_users(
         db=db,
         skip=skip,
         limit=limit,
-        username_query=username_query,
-        email_query=email_query,
+        username_query=normalized_username_query,
+        email_query=normalized_email_query,
         is_active=is_active,
         sort_by=sort_by,
         sort_dir=sort_dir,
     )
     total = crud.count_users(
         db=db,
-        username_query=username_query,
-        email_query=email_query,
+        username_query=normalized_username_query,
+        email_query=normalized_email_query,
         is_active=is_active,
     )
     response.headers["X-Total-Count"] = str(total)

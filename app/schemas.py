@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, Field, conint, constr
+from pydantic import BaseModel, EmailStr, Field, validator
 from typing import List, Optional, Literal
 
 
@@ -10,12 +10,19 @@ UserSortDir = Literal["asc", "desc"]
 
 
 class TaskBase(BaseModel):
-    title: constr(strip_whitespace=True, min_length=1, max_length=200)
-    description: Optional[constr(max_length=1000)] = None
+    title: str = Field(min_length=1, max_length=200)
+    description: Optional[str] = Field(default=None, max_length=1000)
     completed: bool = False
 
+    @validator("title")
+    def validate_title(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("title must not be blank")
+        return stripped
+
 class TaskCreate(TaskBase):
-    owner_id: conint(gt=0)
+    owner_id: int = Field(gt=0)
 
 
 class TaskUpdate(BaseModel):
@@ -25,7 +32,13 @@ class TaskUpdate(BaseModel):
 
 
 class TaskBulkUpdateRequest(BaseModel):
-    task_ids: List[conint(gt=0)] = Field(min_items=1)
+    task_ids: List[int] = Field(min_items=1)
+
+    @validator("task_ids")
+    def validate_task_ids(cls, value: List[int]) -> List[int]:
+        if any(task_id <= 0 for task_id in value):
+            raise ValueError("task_ids must contain only positive integers")
+        return value
 
 class Task(TaskBase):
     id: int
@@ -35,8 +48,15 @@ class Task(TaskBase):
         orm_mode = True
 
 class UserBase(BaseModel):
-    username: constr(strip_whitespace=True, min_length=3, max_length=50)
+    username: str = Field(min_length=3, max_length=50)
     email: EmailStr
+
+    @validator("username")
+    def validate_username(cls, value: str) -> str:
+        stripped = value.strip()
+        if len(stripped) < 3:
+            raise ValueError("username must be at least 3 characters")
+        return stripped
 
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=128)

@@ -9,6 +9,13 @@ router = APIRouter(
 )
 
 
+def _normalize_optional_query(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip()
+    return normalized or None
+
+
 def _ensure_unique_task_ids(task_ids: list[int]) -> None:
     if len(task_ids) != len(set(task_ids)):
         raise HTTPException(status_code=400, detail="task_ids must contain unique values")
@@ -35,14 +42,16 @@ def read_tasks(
     sort_dir: schemas.TaskSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db)
 ):
+    normalized_title_query = _normalize_optional_query(title_query)
+    normalized_description_query = _normalize_optional_query(description_query)
     tasks = crud.get_tasks(
         db,
         skip=skip,
         limit=limit,
         completed=completed,
         owner_id=owner_id,
-        title_query=title_query,
-        description_query=description_query,
+        title_query=normalized_title_query,
+        description_query=normalized_description_query,
         sort_by=sort_by,
         sort_dir=sort_dir,
     )
@@ -50,8 +59,8 @@ def read_tasks(
         db=db,
         completed=completed,
         owner_id=owner_id,
-        title_query=title_query,
-        description_query=description_query,
+        title_query=normalized_title_query,
+        description_query=normalized_description_query,
     )
     response.headers["X-Total-Count"] = str(total)
     return tasks
