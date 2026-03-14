@@ -105,6 +105,26 @@ def get_user_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100):
 def count_user_tasks(db: Session, user_id: int):
     return db.query(models.Task).filter(models.Task.owner_id == user_id).count()
 
+
+def get_user_summary(db: Session):
+    total = db.query(models.User).count()
+    active = db.query(models.User).filter(models.User.is_active.is_(True)).count()
+    inactive = total - active
+    with_tasks = (
+        db.query(models.User.id)
+        .join(models.Task, models.Task.owner_id == models.User.id)
+        .distinct()
+        .count()
+    )
+    without_tasks = total - with_tasks
+    return {
+        "total": total,
+        "active": active,
+        "inactive": inactive,
+        "with_tasks": with_tasks,
+        "without_tasks": without_tasks,
+    }
+
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = pwd_context.hash(user.password)
     db_user = models.User(

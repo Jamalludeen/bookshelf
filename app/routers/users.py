@@ -64,6 +64,11 @@ def read_users(
     return users
 
 
+@router.get("/summary", response_model=schemas.UserSummary)
+def read_user_summary(db: Session = Depends(database.get_db)):
+    return crud.get_user_summary(db=db)
+
+
 @router.get("/{user_id}", response_model=schemas.User)
 def read_user(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     user = crud.get_user_by_id(db=db, user_id=user_id)

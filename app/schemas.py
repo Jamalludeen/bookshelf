@@ -80,6 +80,14 @@ class TaskSummary(BaseModel):
     pending: int
 
 
+class UserSummary(BaseModel):
+    total: int
+    active: int
+    inactive: int
+    with_tasks: int
+    without_tasks: int
+
+
 class Message(BaseModel):
     detail: str
 
