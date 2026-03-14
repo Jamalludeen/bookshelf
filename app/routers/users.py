@@ -103,3 +103,11 @@ def update_user_status(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@router.delete("/{user_id}", response_model=schemas.Message, status_code=status.HTTP_200_OK)
+def delete_user(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    user = crud.delete_user(db=db, user_id=user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"detail": "User deleted successfully"}

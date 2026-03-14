@@ -148,6 +148,16 @@ def update_user_status(db: Session, user_id: int, is_active: bool):
     db.refresh(db_user)
     return db_user
 
+
+def delete_user(db: Session, user_id: int):
+    db_user = get_user_by_id(db=db, user_id=user_id)
+    if not db_user:
+        return None
+
+    db.delete(db_user)
+    db.commit()
+    return db_user
+
 def get_tasks(
     db: Session,
     skip: int = 0,
