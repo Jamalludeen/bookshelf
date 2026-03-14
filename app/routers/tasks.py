@@ -98,6 +98,18 @@ def reopen_tasks_bulk(
     return tasks
 
 
+@router.delete("/bulk", response_model=schemas.Message, status_code=status.HTTP_200_OK)
+def delete_tasks_bulk(
+    payload: schemas.TaskBulkUpdateRequest,
+    db: Session = Depends(database.get_db),
+):
+    _ensure_unique_task_ids(payload.task_ids)
+    deleted_count = crud.delete_tasks(db=db, task_ids=payload.task_ids)
+    if deleted_count == 0:
+        raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    return {"detail": f"Deleted {deleted_count} task(s) successfully"}
+
+
 @router.get("/{task_id}", response_model=schemas.Task)
 def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.get_task_by_id(db=db, task_id=task_id)

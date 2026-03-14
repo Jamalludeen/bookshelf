@@ -312,6 +312,19 @@ def set_tasks_incomplete(db: Session, task_ids: list[int]):
     return tasks
 
 
+def delete_tasks(db: Session, task_ids: list[int]):
+    unique_ids = _unique_task_ids(task_ids)
+    tasks = db.query(models.Task).filter(models.Task.id.in_(unique_ids)).all()
+    if not tasks:
+        return 0
+
+    deleted_count = len(tasks)
+    for task in tasks:
+        db.delete(task)
+    db.commit()
+    return deleted_count
+
+
 def delete_task(db: Session, task_id: int):
     db_task = get_task_by_id(db=db, task_id=task_id)
     if not db_task:
