@@ -74,6 +74,30 @@ def read_task_summary(
     return crud.get_task_summary(db=db, owner_id=owner_id)
 
 
+@router.patch("/bulk/complete", response_model=List[schemas.Task])
+def complete_tasks_bulk(
+    payload: schemas.TaskBulkUpdateRequest,
+    db: Session = Depends(database.get_db),
+):
+    _ensure_unique_task_ids(payload.task_ids)
+    tasks = crud.set_tasks_completed(db=db, task_ids=payload.task_ids)
+    if not tasks:
+        raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    return tasks
+
+
+@router.patch("/bulk/reopen", response_model=List[schemas.Task])
+def reopen_tasks_bulk(
+    payload: schemas.TaskBulkUpdateRequest,
+    db: Session = Depends(database.get_db),
+):
+    _ensure_unique_task_ids(payload.task_ids)
+    tasks = crud.set_tasks_incomplete(db=db, task_ids=payload.task_ids)
+    if not tasks:
+        raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    return tasks
+
+
 @router.get("/{task_id}", response_model=schemas.Task)
 def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.get_task_by_id(db=db, task_id=task_id)
@@ -111,30 +135,6 @@ def reopen_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.g
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     return task
-
-
-@router.patch("/bulk/complete", response_model=List[schemas.Task])
-def complete_tasks_bulk(
-    payload: schemas.TaskBulkUpdateRequest,
-    db: Session = Depends(database.get_db),
-):
-    _ensure_unique_task_ids(payload.task_ids)
-    tasks = crud.set_tasks_completed(db=db, task_ids=payload.task_ids)
-    if not tasks:
-        raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
-    return tasks
-
-
-@router.patch("/bulk/reopen", response_model=List[schemas.Task])
-def reopen_tasks_bulk(
-    payload: schemas.TaskBulkUpdateRequest,
-    db: Session = Depends(database.get_db),
-):
-    _ensure_unique_task_ids(payload.task_ids)
-    tasks = crud.set_tasks_incomplete(db=db, task_ids=payload.task_ids)
-    if not tasks:
-        raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
-    return tasks
 
 
 @router.delete("/{task_id}", response_model=schemas.Message, status_code=status.HTTP_200_OK)
