@@ -1,4 +1,8 @@
+import csv
+from io import StringIO
+
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from .. import crud, database, schemas
@@ -108,6 +112,57 @@ def delete_tasks_bulk(
     if deleted_count == 0:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
     return {"detail": f"Deleted {deleted_count} task(s) successfully"}
+
+
+@router.get("/export")
+def export_tasks_csv(
+    completed: Optional[bool] = None,
+    owner_id: Optional[int] = Query(default=None, ge=1),
+    title_query: Optional[str] = Query(default=None, max_length=200),
+    description_query: Optional[str] = Query(default=None, max_length=1000),
+    sort_by: schemas.TaskSortBy = Query(default="id"),
+    sort_dir: schemas.TaskSortDir = Query(default="asc"),
+    db: Session = Depends(database.get_db),
+):
+    normalized_title_query = _normalize_optional_query(title_query)
+    normalized_description_query = _normalize_optional_query(description_query)
+    total = crud.count_tasks(
+        db=db,
+        completed=completed,
+        owner_id=owner_id,
+        title_query=normalized_title_query,
+        description_query=normalized_description_query,
+    )
+    tasks = crud.get_tasks(
+        db=db,
+        skip=0,
+        limit=max(total, 1),
+        completed=completed,
+        owner_id=owner_id,
+        title_query=normalized_title_query,
+        description_query=normalized_description_query,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
+
+    buffer = StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(["id", "title", "description", "completed", "owner_id"])
+    for task in tasks:
+        writer.writerow([
+            task.id,
+            task.title,
+            task.description or "",
+            str(task.completed).lower(),
+            task.owner_id,
+        ])
+    buffer.seek(0)
+
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="tasks.csv"'},
+    )
 
 
 @router.get("/{task_id}", response_model=schemas.Task)
