@@ -80,6 +80,14 @@ class TaskSummary(BaseModel):
     pending: int
 
 
+class UserSummary(BaseModel):
+    total: int
+    active: int
+    inactive: int
+    with_tasks: int
+    without_tasks: int
+
+
 class Message(BaseModel):
     detail: str
 
@@ -97,5 +105,17 @@ class HealthInfo(BaseModel):
     status: Literal["ok", "degraded"]
     database: Literal["reachable", "unreachable"]
     version: str
+    checked_at: datetime
+
+
+class LivenessInfo(BaseModel):
+    status: Literal["alive"]
+    version: str
+    checked_at: datetime
+
+
+class ReadinessInfo(BaseModel):
+    status: Literal["ready", "not_ready"]
+    database: Literal["reachable", "unreachable"]
     checked_at: datetime
         

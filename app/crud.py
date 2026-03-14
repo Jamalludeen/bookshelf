@@ -105,6 +105,26 @@ def get_user_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100):
 def count_user_tasks(db: Session, user_id: int):
     return db.query(models.Task).filter(models.Task.owner_id == user_id).count()
 
+
+def get_user_summary(db: Session):
+    total = db.query(models.User).count()
+    active = db.query(models.User).filter(models.User.is_active.is_(True)).count()
+    inactive = total - active
+    with_tasks = (
+        db.query(models.User.id)
+        .join(models.Task, models.Task.owner_id == models.User.id)
+        .distinct()
+        .count()
+    )
+    without_tasks = total - with_tasks
+    return {
+        "total": total,
+        "active": active,
+        "inactive": inactive,
+        "with_tasks": with_tasks,
+        "without_tasks": without_tasks,
+    }
+
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = pwd_context.hash(user.password)
     db_user = models.User(
@@ -126,6 +146,16 @@ def update_user_status(db: Session, user_id: int, is_active: bool):
     db_user.is_active = is_active
     db.commit()
     db.refresh(db_user)
+    return db_user
+
+
+def delete_user(db: Session, user_id: int):
+    db_user = get_user_by_id(db=db, user_id=user_id)
+    if not db_user:
+        return None
+
+    db.delete(db_user)
+    db.commit()
     return db_user
 
 def get_tasks(
@@ -280,6 +310,19 @@ def set_tasks_incomplete(db: Session, task_ids: list[int]):
     for task in tasks:
         db.refresh(task)
     return tasks
+
+
+def delete_tasks(db: Session, task_ids: list[int]):
+    unique_ids = _unique_task_ids(task_ids)
+    tasks = db.query(models.Task).filter(models.Task.id.in_(unique_ids)).all()
+    if not tasks:
+        return 0
+
+    deleted_count = len(tasks)
+    for task in tasks:
+        db.delete(task)
+    db.commit()
+    return deleted_count
 
 
 def delete_task(db: Session, task_id: int):

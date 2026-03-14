@@ -25,10 +25,13 @@ Base URLs are listed with common query parameters.
 ### Users
 
 - POST /users
-- GET /users?skip=0&limit=100&username_query=&email_query=&is_active=
+- GET /users?skip=0&limit=100&username_query=&email_query=&is_active=&sort_by=&sort_dir=
+- GET /users/summary
+- GET /users/export?username_query=&email_query=&is_active=&sort_by=&sort_dir=
 - PATCH /users/{user_id}/status
 - GET /users/{user_id}
 - GET /users/{user_id}/tasks?skip=0&limit=100
+- DELETE /users/{user_id}
 
 ### Tasks
 
@@ -41,18 +44,24 @@ Base URLs are listed with common query parameters.
 - PATCH /tasks/{task_id}/reopen
 - PATCH /tasks/bulk/complete
 - PATCH /tasks/bulk/reopen
+- DELETE /tasks/bulk
+- GET /tasks/export?completed=&owner_id=&title_query=&description_query=&sort_by=&sort_dir=
 - DELETE /tasks/{task_id}
 
 ### System
 
 - GET /
 - GET /health
+- GET /health/live
+- GET /health/ready
 - GET /version
 
 Notes:
 
 - `GET /` returns both a welcome message and API version.
 - `GET /health` returns `503` when the database is unreachable.
+- `GET /health/live` is a lightweight process liveness probe.
+- `GET /health/ready` is a readiness probe that verifies database access.
 - System endpoints are grouped under the `system` tag in OpenAPI docs.
 
 ### Data handling
@@ -64,3 +73,8 @@ Notes:
 
 - `GET /users`, `GET /users/{user_id}/tasks`, and `GET /tasks` include `X-Total-Count` for total records matching filters.
 - All responses include `X-Request-ID` and `X-Process-Time` for request tracing and timing.
+
+## Export support
+
+- `GET /users/export` downloads filtered user data as CSV.
+- `GET /tasks/export` downloads filtered task data as CSV.

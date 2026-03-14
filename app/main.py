@@ -96,6 +96,36 @@ def health_check(response: Response):
     }
 
 
+@app.get("/health/live", tags=["system"], response_model=schemas.LivenessInfo)
+def liveness_check():
+    return {
+        "status": "alive",
+        "version": app.version,
+        "checked_at": datetime.now(timezone.utc),
+    }
+
+
+@app.get("/health/ready", tags=["system"], response_model=schemas.ReadinessInfo)
+def readiness_check(response: Response):
+    checked_at = datetime.now(timezone.utc)
+    try:
+        with database.engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except (SQLAlchemyError, Exception):
+        response.status_code = 503
+        return {
+            "status": "not_ready",
+            "database": "unreachable",
+            "checked_at": checked_at,
+        }
+
+    return {
+        "status": "ready",
+        "database": "reachable",
+        "checked_at": checked_at,
+    }
+
+
 @app.get("/version", tags=["system"], response_model=schemas.VersionInfo)
 def version():
     return {"version": app.version}
