@@ -98,4 +98,16 @@ class HealthInfo(BaseModel):
     database: Literal["reachable", "unreachable"]
     version: str
     checked_at: datetime
+
+
+class LivenessInfo(BaseModel):
+    status: Literal["alive"]
+    version: str
+    checked_at: datetime
+
+
+class ReadinessInfo(BaseModel):
+    status: Literal["ready", "not_ready"]
+    database: Literal["reachable", "unreachable"]
+    checked_at: datetime
         
