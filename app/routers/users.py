@@ -1,6 +1,10 @@
+import csv
+from io import StringIO
+
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from .. import crud, database, schemas
@@ -67,6 +71,54 @@ def read_users(
 @router.get("/summary", response_model=schemas.UserSummary)
 def read_user_summary(db: Session = Depends(database.get_db)):
     return crud.get_user_summary(db=db)
+
+
+@router.get("/export")
+def export_users_csv(
+    username_query: str | None = Query(default=None, max_length=50),
+    email_query: str | None = Query(default=None, max_length=255),
+    is_active: bool | None = Query(default=None),
+    sort_by: schemas.UserSortBy = Query(default="id"),
+    sort_dir: schemas.UserSortDir = Query(default="asc"),
+    db: Session = Depends(database.get_db),
+):
+    normalized_username_query = _normalize_optional_query(username_query)
+    normalized_email_query = _normalize_optional_query(email_query)
+    total = crud.count_users(
+        db=db,
+        username_query=normalized_username_query,
+        email_query=normalized_email_query,
+        is_active=is_active,
+    )
+    users = crud.get_users(
+        db=db,
+        skip=0,
+        limit=max(total, 1),
+        username_query=normalized_username_query,
+        email_query=normalized_email_query,
+        is_active=is_active,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
+
+    buffer = StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(["id", "username", "email", "is_active", "task_count"])
+    for user in users:
+        writer.writerow([
+            user.id,
+            user.username,
+            user.email,
+            str(user.is_active).lower(),
+            len(user.tasks),
+        ])
+    buffer.seek(0)
+
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="users.csv"'},
+    )
 
 
 @router.get("/{user_id}", response_model=schemas.User)
