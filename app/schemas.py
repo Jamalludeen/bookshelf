@@ -138,4 +138,9 @@ class SystemStats(BaseModel):
     tasks_total: int
     tasks_completed: int
     tasks_pending: int
+
+
+class UptimeInfo(BaseModel):
+    started_at: datetime
+    uptime_seconds: float
         

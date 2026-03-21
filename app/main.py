@@ -27,6 +27,8 @@ app = FastAPI(
     ],
 )
 
+APP_STARTED_AT = datetime.now(timezone.utc)
+
 # app.include_router(auth.router)
 app.include_router(tasks.router)
 app.include_router(users.router)
@@ -136,3 +138,12 @@ def version():
 def system_stats():
     with database.SessionLocal() as db:
         return crud.get_system_stats(db=db)
+
+
+@app.get("/uptime", tags=["system"], response_model=schemas.UptimeInfo)
+def uptime_info():
+    now = datetime.now(timezone.utc)
+    return {
+        "started_at": APP_STARTED_AT,
+        "uptime_seconds": (now - APP_STARTED_AT).total_seconds(),
+    }
