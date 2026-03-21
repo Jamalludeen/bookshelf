@@ -125,6 +125,19 @@ def get_user_summary(db: Session):
         "without_tasks": without_tasks,
     }
 
+
+def get_user_task_summary(db: Session, user_id: int):
+    base_query = db.query(models.Task).filter(models.Task.owner_id == user_id)
+    total = base_query.count()
+    completed = base_query.filter(models.Task.completed.is_(True)).count()
+    pending = total - completed
+    return {
+        "user_id": user_id,
+        "total": total,
+        "completed": completed,
+        "pending": pending,
+    }
+
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = pwd_context.hash(user.password)
     db_user = models.User(

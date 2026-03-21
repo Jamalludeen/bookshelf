@@ -129,6 +129,14 @@ def read_user(user_id: int = Path(..., ge=1), db: Session = Depends(database.get
     return user
 
 
+@router.get("/{user_id}/summary", response_model=schemas.UserTaskSummary)
+def read_user_task_summary(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    user = crud.get_user_by_id(db=db, user_id=user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return crud.get_user_task_summary(db=db, user_id=user_id)
+
+
 @router.get("/{user_id}/tasks", response_model=List[schemas.Task])
 def read_user_tasks(
     response: Response,

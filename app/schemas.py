@@ -88,6 +88,13 @@ class UserSummary(BaseModel):
     without_tasks: int
 
 
+class UserTaskSummary(BaseModel):
+    user_id: int
+    total: int
+    completed: int
+    pending: int
+
+
 class Message(BaseModel):
     detail: str
 
