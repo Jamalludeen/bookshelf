@@ -204,6 +204,14 @@ def reopen_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.g
     return task
 
 
+@router.patch("/{task_id}/toggle", response_model=schemas.Task)
+def toggle_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    task = crud.toggle_task_completed(db=db, task_id=task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
 @router.delete("/{task_id}", response_model=schemas.Message, status_code=status.HTTP_200_OK)
 def delete_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.delete_task(db=db, task_id=task_id)

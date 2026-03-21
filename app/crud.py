@@ -295,6 +295,17 @@ def set_task_incomplete(db: Session, task_id: int):
     return db_task
 
 
+def toggle_task_completed(db: Session, task_id: int):
+    db_task = get_task_by_id(db=db, task_id=task_id)
+    if not db_task:
+        return None
+
+    db_task.completed = not db_task.completed
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+
 def set_tasks_completed(db: Session, task_ids: list[int]):
     unique_ids = _unique_task_ids(task_ids)
     tasks = db.query(models.Task).filter(models.Task.id.in_(unique_ids)).all()
