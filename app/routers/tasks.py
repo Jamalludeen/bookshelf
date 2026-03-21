@@ -29,7 +29,7 @@ def create_task(
     task: schemas.TaskCreate,
     db: Session = Depends(database.get_db),
 ):
-    if not crud.get_user_by_id(db=db, user_id=task.owner_id):
+    if not crud.user_exists(db=db, user_id=task.owner_id):
         raise HTTPException(status_code=404, detail="Owner not found")
     return crud.create_user_task(db=db, task=task, user_id=task.owner_id)
 
@@ -254,7 +254,7 @@ def replace_task(
     task_id: int = Path(..., ge=1),
     db: Session = Depends(database.get_db),
 ):
-    if not crud.get_user_by_id(db=db, user_id=task_replace.owner_id):
+    if not crud.user_exists(db=db, user_id=task_replace.owner_id):
         raise HTTPException(status_code=404, detail="Owner not found")
 
     task = crud.replace_task(db=db, task_id=task_id, task_replace=task_replace)

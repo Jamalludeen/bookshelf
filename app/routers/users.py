@@ -187,8 +187,7 @@ def read_user(user_id: int = Path(..., ge=1), db: Session = Depends(database.get
 
 @router.get("/{user_id}/summary", response_model=schemas.UserTaskSummary)
 def read_user_task_summary(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
-    user = crud.get_user_by_id(db=db, user_id=user_id)
-    if not user:
+    if not crud.user_exists(db=db, user_id=user_id):
         raise HTTPException(status_code=404, detail="User not found")
     return crud.get_user_task_summary(db=db, user_id=user_id)
 
@@ -201,8 +200,7 @@ def read_user_tasks(
     limit: int = Query(default=100, ge=1, le=100),
     db: Session = Depends(database.get_db),
 ):
-    user = crud.get_user_by_id(db=db, user_id=user_id)
-    if not user:
+    if not crud.user_exists(db=db, user_id=user_id):
         raise HTTPException(status_code=404, detail="User not found")
     tasks = crud.get_user_tasks(db=db, user_id=user_id, skip=skip, limit=limit)
     response.headers["X-Total-Count"] = str(crud.count_user_tasks(db=db, user_id=user_id))
@@ -211,8 +209,7 @@ def read_user_tasks(
 
 @router.get("/{user_id}/tasks/export")
 def export_user_tasks_csv(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
-    user = crud.get_user_by_id(db=db, user_id=user_id)
-    if not user:
+    if not crud.user_exists(db=db, user_id=user_id):
         raise HTTPException(status_code=404, detail="User not found")
 
     total = crud.count_user_tasks(db=db, user_id=user_id)
