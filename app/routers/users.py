@@ -112,6 +112,18 @@ def read_inactive_users(
     return users
 
 
+@router.get("/by-username/{username}", response_model=schemas.UserPublic)
+def read_user_by_username(username: str, db: Session = Depends(database.get_db)):
+    normalized_username = username.strip()
+    if not normalized_username:
+        raise HTTPException(status_code=400, detail="Username must not be blank")
+
+    user = crud.get_user_by_username(db=db, username=normalized_username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
 @router.get("/summary", response_model=schemas.UserSummary)
 def read_user_summary(db: Session = Depends(database.get_db)):
     return crud.get_user_summary(db=db)
