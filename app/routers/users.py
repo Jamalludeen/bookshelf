@@ -68,6 +68,50 @@ def read_users(
     return users
 
 
+@router.get("/active", response_model=List[schemas.User])
+def read_active_users(
+    response: Response,
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
+    sort_by: schemas.UserSortBy = Query(default="id"),
+    sort_dir: schemas.UserSortDir = Query(default="asc"),
+    db: Session = Depends(database.get_db),
+):
+    users = crud.get_users(
+        db=db,
+        skip=skip,
+        limit=limit,
+        is_active=True,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
+    total = crud.count_users(db=db, is_active=True)
+    response.headers["X-Total-Count"] = str(total)
+    return users
+
+
+@router.get("/inactive", response_model=List[schemas.User])
+def read_inactive_users(
+    response: Response,
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
+    sort_by: schemas.UserSortBy = Query(default="id"),
+    sort_dir: schemas.UserSortDir = Query(default="asc"),
+    db: Session = Depends(database.get_db),
+):
+    users = crud.get_users(
+        db=db,
+        skip=skip,
+        limit=limit,
+        is_active=False,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
+    total = crud.count_users(db=db, is_active=False)
+    response.headers["X-Total-Count"] = str(total)
+    return users
+
+
 @router.get("/summary", response_model=schemas.UserSummary)
 def read_user_summary(db: Session = Depends(database.get_db)):
     return crud.get_user_summary(db=db)
