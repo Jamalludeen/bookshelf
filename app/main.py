@@ -46,6 +46,22 @@ async def add_observability_headers(request: Request, call_next):
     return response
 
 
+@app.middleware("http")
+async def disable_cache_for_system_endpoints(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path in {
+        "/",
+        "/health",
+        "/health/live",
+        "/health/ready",
+        "/version",
+        "/stats",
+        "/uptime",
+    }:
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @app.exception_handler(HTTPException)
 def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
