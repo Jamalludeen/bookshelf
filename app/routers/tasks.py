@@ -78,6 +78,54 @@ def read_task_summary(
     return crud.get_task_summary(db=db, owner_id=owner_id)
 
 
+@router.get("/completed", response_model=List[schemas.Task])
+def read_completed_tasks(
+    response: Response,
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
+    owner_id: Optional[int] = Query(default=None, ge=1),
+    sort_by: schemas.TaskSortBy = Query(default="id"),
+    sort_dir: schemas.TaskSortDir = Query(default="asc"),
+    db: Session = Depends(database.get_db),
+):
+    tasks = crud.get_tasks(
+        db=db,
+        skip=skip,
+        limit=limit,
+        completed=True,
+        owner_id=owner_id,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
+    total = crud.count_tasks(db=db, completed=True, owner_id=owner_id)
+    response.headers["X-Total-Count"] = str(total)
+    return tasks
+
+
+@router.get("/pending", response_model=List[schemas.Task])
+def read_pending_tasks(
+    response: Response,
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
+    owner_id: Optional[int] = Query(default=None, ge=1),
+    sort_by: schemas.TaskSortBy = Query(default="id"),
+    sort_dir: schemas.TaskSortDir = Query(default="asc"),
+    db: Session = Depends(database.get_db),
+):
+    tasks = crud.get_tasks(
+        db=db,
+        skip=skip,
+        limit=limit,
+        completed=False,
+        owner_id=owner_id,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
+    total = crud.count_tasks(db=db, completed=False, owner_id=owner_id)
+    response.headers["X-Total-Count"] = str(total)
+    return tasks
+
+
 @router.patch("/bulk/complete", response_model=List[schemas.Task])
 def complete_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
