@@ -27,6 +27,8 @@ app = FastAPI(
     ],
 )
 
+APP_STARTED_AT = datetime.now(timezone.utc)
+
 # app.include_router(auth.router)
 app.include_router(tasks.router)
 app.include_router(users.router)
@@ -41,6 +43,22 @@ async def add_observability_headers(request: Request, call_next):
     response.headers["X-Request-ID"] = request_id
     response.headers["X-Process-Time"] = f"{process_time:.6f}"
     response.headers["X-API-Version"] = app.version
+    return response
+
+
+@app.middleware("http")
+async def disable_cache_for_system_endpoints(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path in {
+        "/",
+        "/health",
+        "/health/live",
+        "/health/ready",
+        "/version",
+        "/stats",
+        "/uptime",
+    }:
+        response.headers["Cache-Control"] = "no-store"
     return response
 
 
@@ -136,3 +154,12 @@ def version():
 def system_stats():
     with database.SessionLocal() as db:
         return crud.get_system_stats(db=db)
+
+
+@app.get("/uptime", tags=["system"], response_model=schemas.UptimeInfo)
+def uptime_info():
+    now = datetime.now(timezone.utc)
+    return {
+        "started_at": APP_STARTED_AT,
+        "uptime_seconds": (now - APP_STARTED_AT).total_seconds(),
+    }

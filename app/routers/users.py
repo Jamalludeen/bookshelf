@@ -112,6 +112,18 @@ def read_inactive_users(
     return users
 
 
+@router.get("/by-username/{username}", response_model=schemas.UserPublic)
+def read_user_by_username(username: str, db: Session = Depends(database.get_db)):
+    normalized_username = username.strip()
+    if not normalized_username:
+        raise HTTPException(status_code=400, detail="Username must not be blank")
+
+    user = crud.get_user_by_username(db=db, username=normalized_username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
 @router.get("/summary", response_model=schemas.UserSummary)
 def read_user_summary(db: Session = Depends(database.get_db)):
     return crud.get_user_summary(db=db)
@@ -175,8 +187,7 @@ def read_user(user_id: int = Path(..., ge=1), db: Session = Depends(database.get
 
 @router.get("/{user_id}/summary", response_model=schemas.UserTaskSummary)
 def read_user_task_summary(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
-    user = crud.get_user_by_id(db=db, user_id=user_id)
-    if not user:
+    if not crud.user_exists(db=db, user_id=user_id):
         raise HTTPException(status_code=404, detail="User not found")
     return crud.get_user_task_summary(db=db, user_id=user_id)
 
@@ -189,12 +200,39 @@ def read_user_tasks(
     limit: int = Query(default=100, ge=1, le=100),
     db: Session = Depends(database.get_db),
 ):
-    user = crud.get_user_by_id(db=db, user_id=user_id)
-    if not user:
+    if not crud.user_exists(db=db, user_id=user_id):
         raise HTTPException(status_code=404, detail="User not found")
     tasks = crud.get_user_tasks(db=db, user_id=user_id, skip=skip, limit=limit)
     response.headers["X-Total-Count"] = str(crud.count_user_tasks(db=db, user_id=user_id))
     return tasks
+
+
+@router.get("/{user_id}/tasks/export")
+def export_user_tasks_csv(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    if not crud.user_exists(db=db, user_id=user_id):
+        raise HTTPException(status_code=404, detail="User not found")
+
+    total = crud.count_user_tasks(db=db, user_id=user_id)
+    tasks = crud.get_user_tasks(db=db, user_id=user_id, skip=0, limit=max(total, 1))
+
+    buffer = StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(["id", "title", "description", "completed", "owner_id"])
+    for task in tasks:
+        writer.writerow([
+            task.id,
+            task.title,
+            task.description or "",
+            str(task.completed).lower(),
+            task.owner_id,
+        ])
+    buffer.seek(0)
+
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="user-{user_id}-tasks.csv"'},
+    )
 
 
 @router.patch("/{user_id}/status", response_model=schemas.User)

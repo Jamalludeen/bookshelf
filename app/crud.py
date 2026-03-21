@@ -70,6 +70,10 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
+def user_exists(db: Session, user_id: int) -> bool:
+    return db.query(models.User.id).filter(models.User.id == user_id).first() is not None
+
+
 def get_users(
     db: Session,
     skip: int = 0,
@@ -93,6 +97,7 @@ def get_users(
         "email": models.User.email,
         "is_active": models.User.is_active,
     }
+    
     sort_column = sort_map.get(sort_by, models.User.id)
     if sort_dir == "desc":
         query = query.order_by(sort_column.desc(), models.User.id.desc())

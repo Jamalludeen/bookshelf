@@ -28,12 +28,14 @@ Base URLs are listed with common query parameters.
 - GET /users?skip=0&limit=100&username_query=&email_query=&is_active=&sort_by=&sort_dir=
 - GET /users/active?skip=0&limit=100&sort_by=&sort_dir=
 - GET /users/inactive?skip=0&limit=100&sort_by=&sort_dir=
+- GET /users/by-username/{username}
 - GET /users/summary
 - GET /users/export?username_query=&email_query=&is_active=&sort_by=&sort_dir=
 - PATCH /users/{user_id}/status
 - GET /users/{user_id}
 - GET /users/{user_id}/summary
 - GET /users/{user_id}/tasks?skip=0&limit=100
+- GET /users/{user_id}/tasks/export
 - DELETE /users/{user_id}
 
 ### Tasks
@@ -41,7 +43,10 @@ Base URLs are listed with common query parameters.
 - POST /tasks
 - GET /tasks?skip=0&limit=100&completed=&owner_id=&title_query=&description_query=&sort_by=&sort_dir=
 - GET /tasks/summary?owner_id=
+- GET /tasks/completed?skip=0&limit=100&owner_id=&sort_by=&sort_dir=
+- GET /tasks/pending?skip=0&limit=100&owner_id=&sort_by=&sort_dir=
 - GET /tasks/{task_id}
+- GET /tasks/{task_id}/owner
 - PUT /tasks/{task_id}
 - PATCH /tasks/{task_id}
 - PATCH /tasks/{task_id}/complete
@@ -61,6 +66,7 @@ Base URLs are listed with common query parameters.
 - GET /health/ready
 - GET /version
 - GET /stats
+- GET /uptime
 
 Notes:
 
@@ -68,6 +74,7 @@ Notes:
 - `GET /health` returns `503` when the database is unreachable.
 - `GET /health/live` is a lightweight process liveness probe.
 - `GET /health/ready` is a readiness probe that verifies database access.
+- `GET /uptime` returns process start time and uptime in seconds.
 - System endpoints are grouped under the `system` tag in OpenAPI docs.
 
 ### Data handling
@@ -79,6 +86,7 @@ Notes:
 
 - `GET /users`, `GET /users/{user_id}/tasks`, and `GET /tasks` include `X-Total-Count` for total records matching filters.
 - All responses include `X-Request-ID`, `X-Process-Time`, and `X-API-Version` for tracing and diagnostics.
+- System endpoints also include `Cache-Control: no-store` to prevent stale health/status caching.
 
 ## Export support
 

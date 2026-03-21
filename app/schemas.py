@@ -78,6 +78,14 @@ class User(UserBase):
         orm_mode = True
 
 
+class UserPublic(UserBase):
+    id: int
+    is_active: bool
+
+    class Config:
+        orm_mode = True
+
+
 class TaskSummary(BaseModel):
     total: int
     completed: int
@@ -138,4 +146,9 @@ class SystemStats(BaseModel):
     tasks_total: int
     tasks_completed: int
     tasks_pending: int
+
+
+class UptimeInfo(BaseModel):
+    started_at: datetime
+    uptime_seconds: float
         
