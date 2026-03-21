@@ -129,4 +129,13 @@ class ReadinessInfo(BaseModel):
     status: Literal["ready", "not_ready"]
     database: Literal["reachable", "unreachable"]
     checked_at: datetime
+
+
+class SystemStats(BaseModel):
+    users_total: int
+    users_active: int
+    users_inactive: int
+    tasks_total: int
+    tasks_completed: int
+    tasks_pending: int
         

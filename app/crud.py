@@ -287,6 +287,23 @@ def get_task_summary(db: Session, owner_id: Optional[int] = None):
     return {"total": total, "completed": completed, "pending": pending}
 
 
+def get_system_stats(db: Session):
+    users_total = db.query(models.User).count()
+    users_active = db.query(models.User).filter(models.User.is_active.is_(True)).count()
+    users_inactive = users_total - users_active
+    tasks_total = db.query(models.Task).count()
+    tasks_completed = db.query(models.Task).filter(models.Task.completed.is_(True)).count()
+    tasks_pending = tasks_total - tasks_completed
+    return {
+        "users_total": users_total,
+        "users_active": users_active,
+        "users_inactive": users_inactive,
+        "tasks_total": tasks_total,
+        "tasks_completed": tasks_completed,
+        "tasks_pending": tasks_pending,
+    }
+
+
 def set_task_completed(db: Session, task_id: int):
     db_task = get_task_by_id(db=db, task_id=task_id)
     if not db_task:
