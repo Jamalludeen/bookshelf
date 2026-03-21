@@ -209,6 +209,35 @@ def read_user_tasks(
     return tasks
 
 
+@router.get("/{user_id}/tasks/export")
+def export_user_tasks_csv(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    user = crud.get_user_by_id(db=db, user_id=user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    total = crud.count_user_tasks(db=db, user_id=user_id)
+    tasks = crud.get_user_tasks(db=db, user_id=user_id, skip=0, limit=max(total, 1))
+
+    buffer = StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(["id", "title", "description", "completed", "owner_id"])
+    for task in tasks:
+        writer.writerow([
+            task.id,
+            task.title,
+            task.description or "",
+            str(task.completed).lower(),
+            task.owner_id,
+        ])
+    buffer.seek(0)
+
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="user-{user_id}-tasks.csv"'},
+    )
+
+
 @router.patch("/{user_id}/status", response_model=schemas.User)
 def update_user_status(
     payload: schemas.UserStatusUpdate,
