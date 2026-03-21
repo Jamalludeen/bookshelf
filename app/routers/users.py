@@ -68,6 +68,50 @@ def read_users(
     return users
 
 
+@router.get("/active", response_model=List[schemas.User])
+def read_active_users(
+    response: Response,
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
+    sort_by: schemas.UserSortBy = Query(default="id"),
+    sort_dir: schemas.UserSortDir = Query(default="asc"),
+    db: Session = Depends(database.get_db),
+):
+    users = crud.get_users(
+        db=db,
+        skip=skip,
+        limit=limit,
+        is_active=True,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
+    total = crud.count_users(db=db, is_active=True)
+    response.headers["X-Total-Count"] = str(total)
+    return users
+
+
+@router.get("/inactive", response_model=List[schemas.User])
+def read_inactive_users(
+    response: Response,
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
+    sort_by: schemas.UserSortBy = Query(default="id"),
+    sort_dir: schemas.UserSortDir = Query(default="asc"),
+    db: Session = Depends(database.get_db),
+):
+    users = crud.get_users(
+        db=db,
+        skip=skip,
+        limit=limit,
+        is_active=False,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
+    total = crud.count_users(db=db, is_active=False)
+    response.headers["X-Total-Count"] = str(total)
+    return users
+
+
 @router.get("/summary", response_model=schemas.UserSummary)
 def read_user_summary(db: Session = Depends(database.get_db)):
     return crud.get_user_summary(db=db)
@@ -127,6 +171,14 @@ def read_user(user_id: int = Path(..., ge=1), db: Session = Depends(database.get
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@router.get("/{user_id}/summary", response_model=schemas.UserTaskSummary)
+def read_user_task_summary(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    user = crud.get_user_by_id(db=db, user_id=user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return crud.get_user_task_summary(db=db, user_id=user_id)
 
 
 @router.get("/{user_id}/tasks", response_model=List[schemas.Task])

@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from . import database, models, schemas
+from . import crud, database, models, schemas
 from .routers import tasks, users
 
 # Create Database Tables
@@ -40,6 +40,7 @@ async def add_observability_headers(request: Request, call_next):
     process_time = perf_counter() - start_time
     response.headers["X-Request-ID"] = request_id
     response.headers["X-Process-Time"] = f"{process_time:.6f}"
+    response.headers["X-API-Version"] = app.version
     return response
 
 
@@ -129,3 +130,9 @@ def readiness_check(response: Response):
 @app.get("/version", tags=["system"], response_model=schemas.VersionInfo)
 def version():
     return {"version": app.version}
+
+
+@app.get("/stats", tags=["system"], response_model=schemas.SystemStats)
+def system_stats():
+    with database.SessionLocal() as db:
+        return crud.get_system_stats(db=db)

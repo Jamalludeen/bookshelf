@@ -25,6 +25,10 @@ class TaskCreate(TaskBase):
     owner_id: int = Field(gt=0)
 
 
+class TaskReplace(TaskBase):
+    owner_id: int = Field(gt=0)
+
+
 class TaskUpdate(BaseModel):
     title: Optional[str] = Field(default=None, min_length=1, max_length=200)
     description: Optional[str] = Field(default=None, max_length=1000)
@@ -88,6 +92,13 @@ class UserSummary(BaseModel):
     without_tasks: int
 
 
+class UserTaskSummary(BaseModel):
+    user_id: int
+    total: int
+    completed: int
+    pending: int
+
+
 class Message(BaseModel):
     detail: str
 
@@ -118,4 +129,13 @@ class ReadinessInfo(BaseModel):
     status: Literal["ready", "not_ready"]
     database: Literal["reachable", "unreachable"]
     checked_at: datetime
+
+
+class SystemStats(BaseModel):
+    users_total: int
+    users_active: int
+    users_inactive: int
+    tasks_total: int
+    tasks_completed: int
+    tasks_pending: int
         

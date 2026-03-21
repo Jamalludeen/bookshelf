@@ -30,6 +30,34 @@ def _normalize_optional_text(value: Optional[str]) -> Optional[str]:
         return None
     return value.strip()
 
+
+def _apply_user_filters(query, username_query: Optional[str], email_query: Optional[str], is_active: Optional[bool]):
+    if username_query:
+        query = query.filter(models.User.username.ilike(f"%{username_query}%"))
+    if email_query:
+        query = query.filter(models.User.email.ilike(f"%{email_query}%"))
+    if is_active is not None:
+        query = query.filter(models.User.is_active == is_active)
+    return query
+
+
+def _apply_task_filters(
+    query,
+    completed: Optional[bool],
+    owner_id: Optional[int],
+    title_query: Optional[str],
+    description_query: Optional[str],
+):
+    if completed is not None:
+        query = query.filter(models.Task.completed == completed)
+    if owner_id is not None:
+        query = query.filter(models.Task.owner_id == owner_id)
+    if title_query:
+        query = query.filter(models.Task.title.ilike(f"%{title_query}%"))
+    if description_query:
+        query = query.filter(models.Task.description.ilike(f"%{description_query}%"))
+    return query
+
 def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
@@ -52,13 +80,12 @@ def get_users(
     sort_by: schemas.UserSortBy = "id",
     sort_dir: schemas.UserSortDir = "asc",
 ):
-    query = db.query(models.User)
-    if username_query:
-        query = query.filter(models.User.username.ilike(f"%{username_query}%"))
-    if email_query:
-        query = query.filter(models.User.email.ilike(f"%{email_query}%"))
-    if is_active is not None:
-        query = query.filter(models.User.is_active == is_active)
+    query = _apply_user_filters(
+        db.query(models.User),
+        username_query=username_query,
+        email_query=email_query,
+        is_active=is_active,
+    )
 
     sort_map = {
         "id": models.User.id,
@@ -81,13 +108,12 @@ def count_users(
     email_query: Optional[str] = None,
     is_active: Optional[bool] = None,
 ):
-    query = db.query(models.User)
-    if username_query:
-        query = query.filter(models.User.username.ilike(f"%{username_query}%"))
-    if email_query:
-        query = query.filter(models.User.email.ilike(f"%{email_query}%"))
-    if is_active is not None:
-        query = query.filter(models.User.is_active == is_active)
+    query = _apply_user_filters(
+        db.query(models.User),
+        username_query=username_query,
+        email_query=email_query,
+        is_active=is_active,
+    )
     return query.count()
 
 
@@ -123,6 +149,19 @@ def get_user_summary(db: Session):
         "inactive": inactive,
         "with_tasks": with_tasks,
         "without_tasks": without_tasks,
+    }
+
+
+def get_user_task_summary(db: Session, user_id: int):
+    base_query = db.query(models.Task).filter(models.Task.owner_id == user_id)
+    total = base_query.count()
+    completed = base_query.filter(models.Task.completed.is_(True)).count()
+    pending = total - completed
+    return {
+        "user_id": user_id,
+        "total": total,
+        "completed": completed,
+        "pending": pending,
     }
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -169,15 +208,13 @@ def get_tasks(
     sort_by: schemas.TaskSortBy = "id",
     sort_dir: schemas.TaskSortDir = "asc",
 ):
-    query = db.query(models.Task)
-    if completed is not None:
-        query = query.filter(models.Task.completed == completed)
-    if owner_id is not None:
-        query = query.filter(models.Task.owner_id == owner_id)
-    if title_query:
-        query = query.filter(models.Task.title.ilike(f"%{title_query}%"))
-    if description_query:
-        query = query.filter(models.Task.description.ilike(f"%{description_query}%"))
+    query = _apply_task_filters(
+        db.query(models.Task),
+        completed=completed,
+        owner_id=owner_id,
+        title_query=title_query,
+        description_query=description_query,
+    )
 
     sort_map = {
         "id": models.Task.id,
@@ -200,15 +237,13 @@ def count_tasks(
     title_query: Optional[str] = None,
     description_query: Optional[str] = None,
 ):
-    query = db.query(models.Task)
-    if completed is not None:
-        query = query.filter(models.Task.completed == completed)
-    if owner_id is not None:
-        query = query.filter(models.Task.owner_id == owner_id)
-    if title_query:
-        query = query.filter(models.Task.title.ilike(f"%{title_query}%"))
-    if description_query:
-        query = query.filter(models.Task.description.ilike(f"%{description_query}%"))
+    query = _apply_task_filters(
+        db.query(models.Task),
+        completed=completed,
+        owner_id=owner_id,
+        title_query=title_query,
+        description_query=description_query,
+    )
     return query.count()
 
 
@@ -245,6 +280,20 @@ def update_task(db: Session, task_id: int, task_update: schemas.TaskUpdate):
     return db_task
 
 
+def replace_task(db: Session, task_id: int, task_replace: schemas.TaskReplace):
+    db_task = get_task_by_id(db=db, task_id=task_id)
+    if not db_task:
+        return None
+
+    db_task.title = _normalize_text(task_replace.title)
+    db_task.description = _normalize_optional_text(task_replace.description)
+    db_task.completed = task_replace.completed
+    db_task.owner_id = task_replace.owner_id
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+
 def get_task_summary(db: Session, owner_id: Optional[int] = None):
     base_query = db.query(models.Task)
     if owner_id is not None:
@@ -258,6 +307,23 @@ def get_task_summary(db: Session, owner_id: Optional[int] = None):
     completed = completed_query.count()
     pending = total - completed
     return {"total": total, "completed": completed, "pending": pending}
+
+
+def get_system_stats(db: Session):
+    users_total = db.query(models.User).count()
+    users_active = db.query(models.User).filter(models.User.is_active.is_(True)).count()
+    users_inactive = users_total - users_active
+    tasks_total = db.query(models.Task).count()
+    tasks_completed = db.query(models.Task).filter(models.Task.completed.is_(True)).count()
+    tasks_pending = tasks_total - tasks_completed
+    return {
+        "users_total": users_total,
+        "users_active": users_active,
+        "users_inactive": users_inactive,
+        "tasks_total": tasks_total,
+        "tasks_completed": tasks_completed,
+        "tasks_pending": tasks_pending,
+    }
 
 
 def set_task_completed(db: Session, task_id: int):
@@ -277,6 +343,17 @@ def set_task_incomplete(db: Session, task_id: int):
         return None
 
     db_task.completed = False
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+
+def toggle_task_completed(db: Session, task_id: int):
+    db_task = get_task_by_id(db=db, task_id=task_id)
+    if not db_task:
+        return None
+
+    db_task.completed = not db_task.completed
     db.commit()
     db.refresh(db_task)
     return db_task

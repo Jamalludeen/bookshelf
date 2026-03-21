@@ -188,6 +188,21 @@ def update_task(
     return task
 
 
+@router.put("/{task_id}", response_model=schemas.Task)
+def replace_task(
+    task_replace: schemas.TaskReplace,
+    task_id: int = Path(..., ge=1),
+    db: Session = Depends(database.get_db),
+):
+    if not crud.get_user_by_id(db=db, user_id=task_replace.owner_id):
+        raise HTTPException(status_code=404, detail="Owner not found")
+
+    task = crud.replace_task(db=db, task_id=task_id, task_replace=task_replace)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
 @router.patch("/{task_id}/complete", response_model=schemas.Task)
 def complete_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.set_task_completed(db=db, task_id=task_id)
@@ -199,6 +214,14 @@ def complete_task(task_id: int = Path(..., ge=1), db: Session = Depends(database
 @router.patch("/{task_id}/reopen", response_model=schemas.Task)
 def reopen_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.set_task_incomplete(db=db, task_id=task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
+@router.patch("/{task_id}/toggle", response_model=schemas.Task)
+def toggle_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    task = crud.toggle_task_completed(db=db, task_id=task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     return task
