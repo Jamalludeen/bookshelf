@@ -78,6 +78,14 @@ class User(UserBase):
         orm_mode = True
 
 
+class UserPublic(UserBase):
+    id: int
+    is_active: bool
+
+    class Config:
+        orm_mode = True
+
+
 class TaskSummary(BaseModel):
     total: int
     completed: int

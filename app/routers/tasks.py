@@ -221,6 +221,18 @@ def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get
     return task
 
 
+@router.get("/{task_id}/owner", response_model=schemas.UserPublic)
+def read_task_owner(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    task = crud.get_task_by_id(db=db, task_id=task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    user = crud.get_user_by_id(db=db, user_id=task.owner_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Owner not found")
+    return user
+
+
 @router.patch("/{task_id}", response_model=schemas.Task)
 def update_task(
     task_update: schemas.TaskUpdate,
