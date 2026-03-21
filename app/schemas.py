@@ -25,6 +25,10 @@ class TaskCreate(TaskBase):
     owner_id: int = Field(gt=0)
 
 
+class TaskReplace(TaskBase):
+    owner_id: int = Field(gt=0)
+
+
 class TaskUpdate(BaseModel):
     title: Optional[str] = Field(default=None, min_length=1, max_length=200)
     description: Optional[str] = Field(default=None, max_length=1000)

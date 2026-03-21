@@ -258,6 +258,20 @@ def update_task(db: Session, task_id: int, task_update: schemas.TaskUpdate):
     return db_task
 
 
+def replace_task(db: Session, task_id: int, task_replace: schemas.TaskReplace):
+    db_task = get_task_by_id(db=db, task_id=task_id)
+    if not db_task:
+        return None
+
+    db_task.title = _normalize_text(task_replace.title)
+    db_task.description = _normalize_optional_text(task_replace.description)
+    db_task.completed = task_replace.completed
+    db_task.owner_id = task_replace.owner_id
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+
 def get_task_summary(db: Session, owner_id: Optional[int] = None):
     base_query = db.query(models.Task)
     if owner_id is not None:
