@@ -221,6 +221,17 @@ def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get
     return task
 
 
+@router.get("/{task_id}/status", response_model=schemas.TaskStatusInfo)
+def read_task_status(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    task = crud.get_task_by_id(db=db, task_id=task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return {
+        "task_id": task.id,
+        "completed": task.completed,
+    }
+
+
 @router.get("/{task_id}/owner", response_model=schemas.UserPublic)
 def read_task_owner(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.get_task_by_id(db=db, task_id=task_id)

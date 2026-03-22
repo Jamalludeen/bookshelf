@@ -156,4 +156,9 @@ class UptimeInfo(BaseModel):
 class DatabaseHealthInfo(BaseModel):
     reachable: bool
     checked_at: datetime
+
+
+class TaskStatusInfo(BaseModel):
+    task_id: int
+    completed: bool
         
