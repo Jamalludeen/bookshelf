@@ -232,6 +232,11 @@ def read_task_status(task_id: int = Path(..., ge=1), db: Session = Depends(datab
     }
 
 
+@router.get("/{task_id}/exists", response_model=schemas.ExistsInfo)
+def read_task_exists(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    return {"exists": crud.task_exists(db=db, task_id=task_id)}
+
+
 @router.get("/{task_id}/owner", response_model=schemas.UserPublic)
 def read_task_owner(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.get_task_by_id(db=db, task_id=task_id)

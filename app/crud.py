@@ -255,6 +255,10 @@ def count_tasks(
 def get_task_by_id(db: Session, task_id: int):
     return db.query(models.Task).filter(models.Task.id == task_id).first()
 
+
+def task_exists(db: Session, task_id: int) -> bool:
+    return db.query(models.Task.id).filter(models.Task.id == task_id).first() is not None
+
 def create_user_task(db: Session, task: schemas.TaskCreate, user_id: int):
     task_data = task.dict()
     task_data["title"] = _normalize_text(task_data["title"])
