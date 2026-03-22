@@ -12,6 +12,9 @@ router = APIRouter(
     tags=["tasks"]
 )
 
+DEFAULT_LIMIT = 100
+MAX_LIMIT = 100
+
 
 def _normalize_optional_query(value: str | None) -> str | None:
     if value is None:
@@ -37,7 +40,7 @@ def create_task(
 def read_tasks(
     response: Response,
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     completed: Optional[bool] = None,
     owner_id: Optional[int] = Query(default=None, ge=1),
     title_query: Optional[str] = Query(default=None, max_length=200),
@@ -89,7 +92,7 @@ def read_owner_task_summary(owner_id: int = Path(..., ge=1), db: Session = Depen
 def read_completed_tasks(
     response: Response,
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     owner_id: Optional[int] = Query(default=None, ge=1),
     sort_by: schemas.TaskSortBy = Query(default="id"),
     sort_dir: schemas.TaskSortDir = Query(default="asc"),
@@ -113,7 +116,7 @@ def read_completed_tasks(
 def read_pending_tasks(
     response: Response,
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     owner_id: Optional[int] = Query(default=None, ge=1),
     sort_by: schemas.TaskSortBy = Query(default="id"),
     sort_dir: schemas.TaskSortDir = Query(default="asc"),
