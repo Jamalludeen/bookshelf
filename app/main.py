@@ -86,6 +86,15 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
         },
     )
 
+
+def _is_database_reachable() -> bool:
+    try:
+        with database.engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except (SQLAlchemyError, Exception):
+        return False
+    return True
+
 @app.get("/", tags=["system"], response_model=schemas.RootInfo)
 def root():
     return {
@@ -97,10 +106,7 @@ def root():
 @app.get("/health", tags=["system"], response_model=schemas.HealthInfo)
 def health_check(response: Response):
     checked_at = datetime.now(timezone.utc)
-    try:
-        with database.engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
-    except (SQLAlchemyError, Exception):
+    if not _is_database_reachable():
         response.status_code = 503
         return {
             "status": "degraded",
@@ -129,10 +135,7 @@ def liveness_check():
 @app.get("/health/ready", tags=["system"], response_model=schemas.ReadinessInfo)
 def readiness_check(response: Response):
     checked_at = datetime.now(timezone.utc)
-    try:
-        with database.engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
-    except (SQLAlchemyError, Exception):
+    if not _is_database_reachable():
         response.status_code = 503
         return {
             "status": "not_ready",
