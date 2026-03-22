@@ -56,6 +56,7 @@ async def disable_cache_for_system_endpoints(request: Request, call_next):
         "/health",
         "/health/live",
         "/health/ready",
+        "/health/db",
         "/version",
         "/stats",
         "/uptime",
@@ -146,6 +147,18 @@ def readiness_check(response: Response):
     return {
         "status": "ready",
         "database": "reachable",
+        "checked_at": checked_at,
+    }
+
+
+@app.get("/health/db", tags=["system"], response_model=schemas.DatabaseHealthInfo)
+def database_health(response: Response):
+    checked_at = datetime.now(timezone.utc)
+    reachable = _is_database_reachable()
+    if not reachable:
+        response.status_code = 503
+    return {
+        "reachable": reachable,
         "checked_at": checked_at,
     }
 

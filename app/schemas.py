@@ -151,4 +151,9 @@ class SystemStats(BaseModel):
 class UptimeInfo(BaseModel):
     started_at: datetime
     uptime_seconds: float
+
+
+class DatabaseHealthInfo(BaseModel):
+    reachable: bool
+    checked_at: datetime
         
