@@ -78,6 +78,13 @@ def read_task_summary(
     return crud.get_task_summary(db=db, owner_id=owner_id)
 
 
+@router.get("/owner/{owner_id}/summary", response_model=schemas.TaskSummary)
+def read_owner_task_summary(owner_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    if not crud.user_exists(db=db, user_id=owner_id):
+        raise HTTPException(status_code=404, detail="Owner not found")
+    return crud.get_task_summary_by_owner(db=db, owner_id=owner_id)
+
+
 @router.get("/completed", response_model=List[schemas.Task])
 def read_completed_tasks(
     response: Response,

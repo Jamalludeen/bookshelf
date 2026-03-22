@@ -318,6 +318,10 @@ def get_task_summary(db: Session, owner_id: Optional[int] = None):
     return {"total": total, "completed": completed, "pending": pending}
 
 
+def get_task_summary_by_owner(db: Session, owner_id: int):
+    return get_task_summary(db=db, owner_id=owner_id)
+
+
 def get_system_stats(db: Session):
     users_total = db.query(models.User).count()
     users_active = db.query(models.User).filter(models.User.is_active.is_(True)).count()
