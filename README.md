@@ -29,6 +29,7 @@ Base URLs are listed with common query parameters.
 - GET /users/active?skip=0&limit=100&sort_by=&sort_dir=
 - GET /users/inactive?skip=0&limit=100&sort_by=&sort_dir=
 - GET /users/by-username/{username}
+- GET /users/{user_id}/exists
 - GET /users/summary
 - GET /users/export?username_query=&email_query=&is_active=&sort_by=&sort_dir=
 - PATCH /users/{user_id}/status
@@ -43,9 +44,12 @@ Base URLs are listed with common query parameters.
 - POST /tasks
 - GET /tasks?skip=0&limit=100&completed=&owner_id=&title_query=&description_query=&sort_by=&sort_dir=
 - GET /tasks/summary?owner_id=
+- GET /tasks/owner/{owner_id}/summary
 - GET /tasks/completed?skip=0&limit=100&owner_id=&sort_by=&sort_dir=
 - GET /tasks/pending?skip=0&limit=100&owner_id=&sort_by=&sort_dir=
 - GET /tasks/{task_id}
+- GET /tasks/{task_id}/status
+- GET /tasks/{task_id}/exists
 - GET /tasks/{task_id}/owner
 - PUT /tasks/{task_id}
 - PATCH /tasks/{task_id}
@@ -64,6 +68,7 @@ Base URLs are listed with common query parameters.
 - GET /health
 - GET /health/live
 - GET /health/ready
+- GET /health/db
 - GET /version
 - GET /stats
 - GET /uptime
@@ -85,7 +90,7 @@ Notes:
 ## Response headers
 
 - `GET /users`, `GET /users/{user_id}/tasks`, and `GET /tasks` include `X-Total-Count` for total records matching filters.
-- All responses include `X-Request-ID`, `X-Process-Time`, and `X-API-Version` for tracing and diagnostics.
+- All responses include `X-Request-ID`, `X-Process-Time`, `X-API-Version`, and `X-Service-Name` for tracing and diagnostics.
 - System endpoints also include `Cache-Control: no-store` to prevent stale health/status caching.
 
 ## Export support
