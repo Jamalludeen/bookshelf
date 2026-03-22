@@ -28,6 +28,7 @@ app = FastAPI(
 )
 
 APP_STARTED_AT = datetime.now(timezone.utc)
+SERVICE_NAME = "TaskMaster API"
 
 # app.include_router(auth.router)
 app.include_router(tasks.router)
@@ -43,6 +44,7 @@ async def add_observability_headers(request: Request, call_next):
     response.headers["X-Request-ID"] = request_id
     response.headers["X-Process-Time"] = f"{process_time:.6f}"
     response.headers["X-API-Version"] = app.version
+    response.headers["X-Service-Name"] = SERVICE_NAME
     return response
 
 
@@ -54,6 +56,7 @@ async def disable_cache_for_system_endpoints(request: Request, call_next):
         "/health",
         "/health/live",
         "/health/ready",
+        "/health/db",
         "/version",
         "/stats",
         "/uptime",
@@ -84,6 +87,15 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
         },
     )
 
+
+def _is_database_reachable() -> bool:
+    try:
+        with database.engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except (SQLAlchemyError, Exception):
+        return False
+    return True
+
 @app.get("/", tags=["system"], response_model=schemas.RootInfo)
 def root():
     return {
@@ -95,10 +107,7 @@ def root():
 @app.get("/health", tags=["system"], response_model=schemas.HealthInfo)
 def health_check(response: Response):
     checked_at = datetime.now(timezone.utc)
-    try:
-        with database.engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
-    except (SQLAlchemyError, Exception):
+    if not _is_database_reachable():
         response.status_code = 503
         return {
             "status": "degraded",
@@ -127,10 +136,7 @@ def liveness_check():
 @app.get("/health/ready", tags=["system"], response_model=schemas.ReadinessInfo)
 def readiness_check(response: Response):
     checked_at = datetime.now(timezone.utc)
-    try:
-        with database.engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
-    except (SQLAlchemyError, Exception):
+    if not _is_database_reachable():
         response.status_code = 503
         return {
             "status": "not_ready",
@@ -141,6 +147,18 @@ def readiness_check(response: Response):
     return {
         "status": "ready",
         "database": "reachable",
+        "checked_at": checked_at,
+    }
+
+
+@app.get("/health/db", tags=["system"], response_model=schemas.DatabaseHealthInfo)
+def database_health(response: Response):
+    checked_at = datetime.now(timezone.utc)
+    reachable = _is_database_reachable()
+    if not reachable:
+        response.status_code = 503
+    return {
+        "reachable": reachable,
         "checked_at": checked_at,
     }
 

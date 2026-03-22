@@ -12,6 +12,9 @@ router = APIRouter(
     tags=["tasks"]
 )
 
+DEFAULT_LIMIT = 100
+MAX_LIMIT = 100
+
 
 def _normalize_optional_query(value: str | None) -> str | None:
     if value is None:
@@ -37,7 +40,7 @@ def create_task(
 def read_tasks(
     response: Response,
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     completed: Optional[bool] = None,
     owner_id: Optional[int] = Query(default=None, ge=1),
     title_query: Optional[str] = Query(default=None, max_length=200),
@@ -78,11 +81,18 @@ def read_task_summary(
     return crud.get_task_summary(db=db, owner_id=owner_id)
 
 
+@router.get("/owner/{owner_id}/summary", response_model=schemas.TaskSummary)
+def read_owner_task_summary(owner_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    if not crud.user_exists(db=db, user_id=owner_id):
+        raise HTTPException(status_code=404, detail="Owner not found")
+    return crud.get_task_summary_by_owner(db=db, owner_id=owner_id)
+
+
 @router.get("/completed", response_model=List[schemas.Task])
 def read_completed_tasks(
     response: Response,
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     owner_id: Optional[int] = Query(default=None, ge=1),
     sort_by: schemas.TaskSortBy = Query(default="id"),
     sort_dir: schemas.TaskSortDir = Query(default="asc"),
@@ -106,7 +116,7 @@ def read_completed_tasks(
 def read_pending_tasks(
     response: Response,
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     owner_id: Optional[int] = Query(default=None, ge=1),
     sort_by: schemas.TaskSortBy = Query(default="id"),
     sort_dir: schemas.TaskSortDir = Query(default="asc"),
@@ -219,6 +229,22 @@ def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     return task
+
+
+@router.get("/{task_id}/status", response_model=schemas.TaskStatusInfo)
+def read_task_status(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    task = crud.get_task_by_id(db=db, task_id=task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return {
+        "task_id": task.id,
+        "completed": task.completed,
+    }
+
+
+@router.get("/{task_id}/exists", response_model=schemas.ExistsInfo)
+def read_task_exists(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    return {"exists": crud.task_exists(db=db, task_id=task_id)}
 
 
 @router.get("/{task_id}/owner", response_model=schemas.UserPublic)

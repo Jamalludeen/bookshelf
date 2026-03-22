@@ -12,6 +12,9 @@ from .. import crud, database, schemas
 
 router = APIRouter(prefix="/users", tags=["users"])
 
+DEFAULT_LIMIT = 100
+MAX_LIMIT = 100
+
 
 def _normalize_optional_query(value: str | None) -> str | None:
     if value is None:
@@ -38,7 +41,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
 def read_users(
     response: Response,
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     username_query: str | None = Query(default=None, max_length=50),
     email_query: str | None = Query(default=None, max_length=255),
     is_active: bool | None = Query(default=None),
@@ -72,7 +75,7 @@ def read_users(
 def read_active_users(
     response: Response,
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     sort_by: schemas.UserSortBy = Query(default="id"),
     sort_dir: schemas.UserSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db),
@@ -94,7 +97,7 @@ def read_active_users(
 def read_inactive_users(
     response: Response,
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     sort_by: schemas.UserSortBy = Query(default="id"),
     sort_dir: schemas.UserSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db),
@@ -122,6 +125,11 @@ def read_user_by_username(username: str, db: Session = Depends(database.get_db))
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@router.get("/{user_id}/exists", response_model=schemas.ExistsInfo)
+def read_user_exists(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    return {"exists": crud.user_exists(db=db, user_id=user_id)}
 
 
 @router.get("/summary", response_model=schemas.UserSummary)
@@ -197,7 +205,7 @@ def read_user_tasks(
     response: Response,
     user_id: int = Path(..., ge=1),
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     db: Session = Depends(database.get_db),
 ):
     if not crud.user_exists(db=db, user_id=user_id):
