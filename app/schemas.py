@@ -161,4 +161,8 @@ class DatabaseHealthInfo(BaseModel):
 class TaskStatusInfo(BaseModel):
     task_id: int
     completed: bool
+
+
+class ExistsInfo(BaseModel):
+    exists: bool
         

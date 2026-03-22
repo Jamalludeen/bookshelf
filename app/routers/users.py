@@ -124,6 +124,11 @@ def read_user_by_username(username: str, db: Session = Depends(database.get_db))
     return user
 
 
+@router.get("/{user_id}/exists", response_model=schemas.ExistsInfo)
+def read_user_exists(user_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
+    return {"exists": crud.user_exists(db=db, user_id=user_id)}
+
+
 @router.get("/summary", response_model=schemas.UserSummary)
 def read_user_summary(db: Session = Depends(database.get_db)):
     return crud.get_user_summary(db=db)
