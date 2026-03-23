@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Request, Response
+import logging
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
@@ -29,6 +30,10 @@ app = FastAPI(
 
 APP_STARTED_AT = datetime.now(timezone.utc)
 SERVICE_NAME = "TaskMaster API"
+
+# Basic logging configuration for quick runtime diagnostics
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("taskmaster")
 
 # app.include_router(auth.router)
 app.include_router(tasks.router)
