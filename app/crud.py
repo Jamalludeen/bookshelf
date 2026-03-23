@@ -1,3 +1,10 @@
+"""CRUD helpers and utilities for TaskMaster.
+
+This module contains small helper functions used by the routers and
+tests. Changes here are intentionally minimal: normalization helpers,
+unique-id helpers, and small query builders.
+"""
+
 from sqlalchemy.orm import Session
 from typing import Optional
 from . import models, schemas
