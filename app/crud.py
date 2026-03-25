@@ -9,8 +9,10 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from . import models, schemas
 from passlib.context import CryptContext
+import logging
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+logger = logging.getLogger("taskmaster.crud")
 
 
 def _unique_task_ids(task_ids: list[int]) -> list[int]:
@@ -177,6 +179,7 @@ def get_user_task_summary(db: Session, user_id: int):
     }
 
 def create_user(db: Session, user: schemas.UserCreate):
+    logger.debug("create_user: creating user %s", user.username)
     hashed_password = pwd_context.hash(user.password)
     db_user = models.User(
         email=_normalize_email(user.email),
@@ -267,6 +270,7 @@ def task_exists(db: Session, task_id: int) -> bool:
     return db.query(models.Task.id).filter(models.Task.id == task_id).first() is not None
 
 def create_user_task(db: Session, task: schemas.TaskCreate, user_id: int):
+    logger.debug("create_user_task: creating task for user_id=%s title=%s", user_id, task.title)
     task_data = task.dict()
     task_data["title"] = _normalize_text(task_data["title"])
     task_data["description"] = _normalize_optional_text(task_data.get("description"))

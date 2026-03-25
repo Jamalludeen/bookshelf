@@ -50,6 +50,7 @@ class Task(TaskBase):
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
 
 class UserBase(BaseModel):
     username: str = Field(min_length=3, max_length=50)
@@ -76,6 +77,7 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
 
 
 class UserPublic(UserBase):
@@ -84,6 +86,7 @@ class UserPublic(UserBase):
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
 
 
 class TaskSummary(BaseModel):

@@ -1,0 +1,10 @@
+## Quick run (local)
+
+To run the development server locally:
+
+```bash
+pip install -r requirements.txt || pip install fastapi uvicorn sqlalchemy passlib[bcrypt]
+uvicorn app.main:app --reload --port 8000
+```
+
+This file provides a short developer hint for getting started.

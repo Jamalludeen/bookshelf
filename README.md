@@ -1,5 +1,7 @@
 # TaskMaster API
 
+![status badge](https://img.shields.io/badge/status-active-brightgreen)
+
 TaskMaster is a small FastAPI project for managing users and tasks.
 
 ## Quick start
