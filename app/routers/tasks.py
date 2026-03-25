@@ -6,6 +6,11 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from .. import crud, database, schemas
+import logging
+
+
+logger = logging.getLogger("taskmaster.tasks")
+logger.debug("tasks router loaded")
 
 router = APIRouter(
     prefix="/tasks",
