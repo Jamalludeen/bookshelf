@@ -8,6 +8,11 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from .. import crud, database, schemas
+import logging
+
+
+logger = logging.getLogger("taskmaster.users")
+logger.debug("users router loaded")
 
 
 router = APIRouter(prefix="/users", tags=["users"])
