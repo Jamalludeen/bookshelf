@@ -34,6 +34,7 @@ SERVICE_NAME = "TaskMaster API"
 # Basic logging configuration for quick runtime diagnostics
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("taskmaster")
+logger.info("TaskMaster app loaded")
 
 # app.include_router(auth.router)
 app.include_router(tasks.router)
