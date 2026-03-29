@@ -15,6 +15,11 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 logger = logging.getLogger("taskmaster.crud")
 
 
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a plaintext password against a hashed value."""
+    return pwd_context.verify(plain_password, hashed_password)
+
+
 def _unique_task_ids(task_ids: list[int]) -> list[int]:
     seen: set[int] = set()
     unique_ids: list[int] = []

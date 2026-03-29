@@ -15,6 +15,8 @@ TaskMaster is a small FastAPI project for managing users and tasks.
 
    uvicorn app.main:app --reload
 
+App version: 0.1.2
+
 ## Notes
 
 - The SQLite database file is created at `sql_app.db` in this folder.

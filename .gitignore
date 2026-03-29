@@ -8,6 +8,8 @@ env/
 __pypackages__/
 .pytest_cache/
 .mypy_cache/
+.
+.env
 __pycache__/
 *.py[cod]
 *$py.class

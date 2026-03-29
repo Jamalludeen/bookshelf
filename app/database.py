@@ -12,7 +12,7 @@ def get_database_url() -> str:
     return os.environ.get("DATABASE_URL", SQLALCHEMY_DATABASE_URL)
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
+    get_database_url(),
     connect_args={"check_same_thread": False},
     pool_pre_ping=True,
 )
