@@ -10,7 +10,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
 from . import crud, database, models, schemas
-from .routers import tasks, users
+from .routers import all_routers
 
 # Create Database Tables
 models.Base.metadata.create_all(bind=database.engine)
@@ -36,9 +36,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("taskmaster")
 logger.info("TaskMaster app loaded")
 
-# app.include_router(auth.router)
-app.include_router(tasks.router)
-app.include_router(users.router)
+# include routers from routers package
+for _r in all_routers:
+    app.include_router(_r)
 
 
 @app.middleware("http")
