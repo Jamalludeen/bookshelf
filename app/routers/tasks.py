@@ -1,3 +1,8 @@
+"""Tasks API router.
+
+Contains endpoints for creating and querying tasks.
+"""
+
 import csv
 from io import StringIO
 

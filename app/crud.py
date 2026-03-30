@@ -72,11 +72,11 @@ def _apply_task_filters(
         query = query.filter(models.Task.description.ilike(f"%{description_query}%"))
     return query
 
-def get_user_by_username(db: Session, username: str):
+def get_user_by_username(db: Session, username: str) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.username == username).first()
 
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.email == email).first()
 
 
@@ -267,7 +267,7 @@ def count_tasks(
     return query.count()
 
 
-def get_task_by_id(db: Session, task_id: int):
+def get_task_by_id(db: Session, task_id: int) -> Optional[models.Task]:
     return db.query(models.Task).filter(models.Task.id == task_id).first()
 
 
