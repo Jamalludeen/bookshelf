@@ -16,6 +16,8 @@ TaskMaster is a small FastAPI project for managing users and tasks.
    uvicorn app.main:app --reload
 
 Maintainer: maintainer@example.com
+
+Commit style: small, focused commits. See CONTRIBUTING for tips.
 App version: 0.1.2
 
 ## Notes
