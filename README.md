@@ -1,6 +1,6 @@
 # TaskMaster API
 
-![status badge](https://img.shields.io/badge/status-active-brightgreen)
+![status badge](https://img.shields.io/badge/status-active-brightgreen) Maintained
 
 TaskMaster is a small FastAPI project for managing users and tasks.
 
