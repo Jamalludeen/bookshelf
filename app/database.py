@@ -11,6 +11,21 @@ def get_database_url() -> str:
     """Return database URL from env `DATABASE_URL` or fallback to the default."""
     return os.environ.get("DATABASE_URL", SQLALCHEMY_DATABASE_URL)
 
+
+def masked_database_url() -> str:
+    """Return a masked/sanitized database URL for safe logging (hide credentials)."""
+    url = get_database_url()
+    try:
+        if "@" in url and ":" in url.split("@")[0]:
+            # mask user:pass portion
+            head, tail = url.split("@", 1)
+            if ":" in head:
+                user, _ = head.split(":", 1)
+                return f"{user}:*****@{tail}"
+    except Exception:
+        pass
+    return url
+
 engine = create_engine(
     get_database_url(),
     connect_args={"check_same_thread": False},
