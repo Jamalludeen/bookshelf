@@ -41,6 +41,16 @@ for _r in all_routers:
     app.include_router(_r)
 
 
+@app.on_event("startup")
+def on_startup():
+    # Log a masked DB URL and app version for quick diagnostics
+    try:
+        masked = database.masked_database_url()
+    except Exception:
+        masked = "unknown"
+    logger.info("startup: version=%s db=%s", app.version, masked)
+
+
 @app.middleware("http")
 async def add_observability_headers(request: Request, call_next):
     request_id = request.headers.get("x-request-id", str(uuid4()))
