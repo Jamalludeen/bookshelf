@@ -15,6 +15,7 @@ logger = logging.getLogger("taskmaster.users")
 logger.debug("users router loaded")
 
 
+# User-related endpoints live under `/users`.
 router = APIRouter(prefix="/users", tags=["users"])
 
 DEFAULT_LIMIT = 100
