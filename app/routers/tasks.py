@@ -22,6 +22,8 @@ router = APIRouter(
     tags=["tasks"]
 )
 
+# Task endpoints support filtering, summary views, and bulk operations.
+
 DEFAULT_LIMIT = 100
 MAX_LIMIT = 100
 
