@@ -17,6 +17,10 @@ Interactive docs are available at `/docs` and `/redoc` when the server is runnin
 
    uvicorn app.main:app --reload
 
+Quick check:
+
+curl -s http://127.0.0.1:8000/health
+
 Maintainer: maintainer@example.com
 
 Commit style: small, focused commits. See CONTRIBUTING for tips.
