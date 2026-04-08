@@ -40,6 +40,7 @@ def _normalize_email(value: str) -> str:
 
 
 def _normalize_optional_text(value: Optional[str]) -> Optional[str]:
+    """Trim optional text values while preserving `None`."""
     if value is None:
         return None
     return value.strip()

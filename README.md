@@ -4,6 +4,8 @@
 
 TaskMaster is a small FastAPI project for managing users and tasks.
 
+Interactive docs are available at `/docs` and `/redoc` when the server is running.
+
 ## Quick start
 
 1. Create and activate a virtual environment.
@@ -14,6 +16,10 @@ TaskMaster is a small FastAPI project for managing users and tasks.
 3. Run the API:
 
    uvicorn app.main:app --reload
+
+Quick check:
+
+curl -s http://127.0.0.1:8000/health
 
 Maintainer: maintainer@example.com
 
