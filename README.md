@@ -86,6 +86,8 @@ Base URLs are listed with common query parameters.
 - GET /stats
 - GET /uptime
 
+Tip: `GET /uptime` is useful for quick process restarts verification.
+
 Notes:
 
 - `GET /` returns both a welcome message and API version.
