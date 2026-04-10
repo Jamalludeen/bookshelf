@@ -36,6 +36,7 @@ def _normalize_optional_query(value: str | None) -> str | None:
 
 
 def _ensure_unique_task_ids(task_ids: list[int]) -> None:
+    # Bulk operations are deterministic when IDs are unique.
     if len(task_ids) != len(set(task_ids)):
         raise HTTPException(status_code=400, detail="task_ids must contain unique values")
 
