@@ -30,6 +30,7 @@ App version: 0.1.2
 
 - The SQLite database file is created at `sql_app.db` in this folder.
 - This project uses SQLAlchemy models with a simple CRUD layer.
+- See `.env.example` for environment variable defaults.
 
 ## Endpoints
 
