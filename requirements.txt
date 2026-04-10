@@ -4,3 +4,5 @@ sqlalchemy>=1.4
 passlib[bcrypt]>=1.7
 # Optional: email validation support used by Pydantic EmailStr
 email-validator>=2.0.0
+# Optional for local env loading in future tooling
+python-dotenv>=1.0.0
