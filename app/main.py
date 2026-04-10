@@ -34,7 +34,7 @@ SERVICE_NAME = "TaskMaster API"
 # Basic logging configuration for quick runtime diagnostics
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("taskmaster")
-logger.info("TaskMaster app loaded")
+logger.info("TaskMaster application module loaded")
 
 # include routers from routers package
 for _r in all_routers:

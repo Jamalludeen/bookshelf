@@ -36,6 +36,7 @@ def _normalize_text(value: str) -> str:
 
 
 def _normalize_email(value: str) -> str:
+    """Normalize emails for consistent uniqueness checks."""
     return value.strip().lower()
 
 

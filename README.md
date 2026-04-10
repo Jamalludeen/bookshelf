@@ -30,6 +30,7 @@ App version: 0.1.2
 
 - The SQLite database file is created at `sql_app.db` in this folder.
 - This project uses SQLAlchemy models with a simple CRUD layer.
+- See `.env.example` for environment variable defaults.
 
 ## Endpoints
 
@@ -86,6 +87,8 @@ Base URLs are listed with common query parameters.
 - GET /stats
 - GET /uptime
 
+Tip: `GET /uptime` is useful for quick process restarts verification.
+
 Notes:
 
 - `GET /` returns both a welcome message and API version.
@@ -105,6 +108,7 @@ Notes:
 - `GET /users`, `GET /users/{user_id}/tasks`, and `GET /tasks` include `X-Total-Count` for total records matching filters.
 - All responses include `X-Request-ID`, `X-Process-Time`, `X-API-Version`, and `X-Service-Name` for tracing and diagnostics.
 - System endpoints also include `Cache-Control: no-store` to prevent stale health/status caching.
+- Send `X-Request-ID` in requests to propagate your own correlation id across logs.
 
 ## Export support
 

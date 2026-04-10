@@ -23,6 +23,7 @@ MAX_LIMIT = 100
 
 
 def _normalize_optional_query(value: str | None) -> str | None:
+    # Treat whitespace-only query values as absent.
     if value is None:
         return None
     normalized = value.strip()
