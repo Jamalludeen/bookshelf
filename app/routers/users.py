@@ -27,6 +27,7 @@ def _normalize_optional_query(value: str | None) -> str | None:
     if value is None:
         return None
     normalized = value.strip()
+    # Return None so downstream filters can skip this parameter.
     return normalized or None
 
 
