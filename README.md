@@ -6,6 +6,8 @@ TaskMaster is a small FastAPI project for managing users and tasks.
 
 Interactive docs are available at `/docs` and `/redoc` when the server is running.
 
+OpenAPI schema is available at `/openapi.json`.
+
 ## Quick start
 
 1. Create and activate a virtual environment.
@@ -17,9 +19,19 @@ Interactive docs are available at `/docs` and `/redoc` when the server is runnin
 
    uvicorn app.main:app --reload
 
+   or
+
+   make run
+
 Quick check:
 
 curl -s http://127.0.0.1:8000/health
+
+Health details:
+
+curl -s http://127.0.0.1:8000/health/db
+
+curl -s http://127.0.0.1:8000/
 
 Maintainer: maintainer@example.com
 
@@ -31,6 +43,7 @@ App version: 0.1.2
 - The SQLite database file is created at `sql_app.db` in this folder.
 - This project uses SQLAlchemy models with a simple CRUD layer.
 - See `.env.example` for environment variable defaults.
+- Override `DATABASE_URL` in your environment to switch databases.
 
 ## Endpoints
 

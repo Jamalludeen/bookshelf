@@ -16,3 +16,5 @@ You can run the project locally using `run.sh` for convenience.
 Optional: set `DATABASE_URL` to point to a different database backend.
 
 Please keep PRs small and focused when possible.
+
+Prefer one topic per commit to simplify review and rollback.
