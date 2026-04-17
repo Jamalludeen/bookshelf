@@ -23,6 +23,10 @@ Quick check:
 
 curl -s http://127.0.0.1:8000/health
 
+Health details:
+
+   curl -s http://127.0.0.1:8000/health/db
+
 curl -s http://127.0.0.1:8000/
 
 Maintainer: maintainer@example.com
