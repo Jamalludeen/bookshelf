@@ -16,6 +16,7 @@ def masked_database_url() -> str:
     """Return a masked/sanitized database URL for safe logging (hide credentials)."""
     url = get_database_url()
     try:
+        # Expected form for non-sqlite URLs: scheme://user:pass@host/...
         if "@" in url and ":" in url.split("@")[0]:
             # mask user:pass portion
             head, tail = url.split("@", 1)
