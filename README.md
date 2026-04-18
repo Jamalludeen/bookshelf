@@ -10,6 +10,8 @@ OpenAPI schema is available at `/openapi.json`.
 
 The `/docs` page is the quickest place to try requests during development.
 
+The `/redoc` page is useful for a more readable API reference.
+
 ## Quick start
 
 1. Create and activate a virtual environment.
