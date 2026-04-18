@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## 2026-04-17
 
 - Added another batch of rapid micro-improvements and documentation tweaks.
+- Added a fresh 12-commit pass with compact documentation and code comments.
 
 ## 2026-04-08
 

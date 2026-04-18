@@ -37,6 +37,7 @@ def _normalize_text(value: str) -> str:
 
 def _normalize_email(value: str) -> str:
     """Normalize emails for consistent uniqueness checks."""
+    # Lowercasing keeps the uniqueness rules predictable.
     return value.strip().lower()
 
 
