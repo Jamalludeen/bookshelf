@@ -29,6 +29,7 @@ MAX_LIMIT = 100
 
 
 def _normalize_optional_query(value: str | None) -> str | None:
+    # Keep blank search inputs out of the SQL filters.
     if value is None:
         return None
     normalized = value.strip()
