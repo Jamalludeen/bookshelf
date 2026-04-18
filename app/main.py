@@ -49,6 +49,7 @@ def on_startup():
         masked = database.masked_database_url()
     except Exception:
         masked = "unknown"
+    # This helps confirm which configuration the app booted with.
     logger.info("startup: version=%s db=%s", app.version, masked)
 
 
