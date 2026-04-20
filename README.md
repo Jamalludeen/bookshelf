@@ -12,6 +12,8 @@ The `/docs` page is the quickest place to try requests during development.
 
 The `/redoc` page is useful for a more readable API reference.
 
+Use `/openapi.json` when you need schema-driven client generation.
+
 ## Quick start
 
 1. Create and activate a virtual environment.
