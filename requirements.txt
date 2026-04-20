@@ -8,3 +8,4 @@ email-validator>=2.0.0
 python-dotenv>=1.0.0
 
 # Keep this file minimal and aligned with the app's actual imports.
+# Move optional/dev dependencies to separate files if this grows.
