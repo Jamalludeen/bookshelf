@@ -37,6 +37,10 @@ Health details:
 
 curl -s http://127.0.0.1:8000/health/db
 
+Readiness probe:
+
+curl -s http://127.0.0.1:8000/health/ready
+
 curl -s http://127.0.0.1:8000/
 
 Maintainer: maintainer@example.com
