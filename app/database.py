@@ -47,6 +47,7 @@ Base = declarative_base()
 
 def get_db() -> Generator[Session, None, None]:
     """Provide a transactional database session for each request."""
+    # Session is scoped to a single request lifecycle.
     db = SessionLocal()
     try:
         yield db
