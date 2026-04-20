@@ -93,6 +93,7 @@ def read_task_summary(
     owner_id: Optional[int] = Query(default=None, ge=1),
     db: Session = Depends(database.get_db),
 ):
+    # Optional owner filter enables both global and per-user summaries.
     return crud.get_task_summary(db=db, owner_id=owner_id)
 
 
