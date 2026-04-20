@@ -20,3 +20,5 @@ Please keep PRs small and focused when possible.
 Prefer one topic per commit to simplify review and rollback.
 
 Keep review comments short and concrete when suggesting changes.
+
+Small commits with descriptive messages are strongly preferred.

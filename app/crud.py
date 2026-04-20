@@ -21,6 +21,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def _unique_task_ids(task_ids: list[int]) -> list[int]:
+    # Preserve input order while removing duplicates.
     seen: set[int] = set()
     unique_ids: list[int] = []
     for task_id in task_ids:
