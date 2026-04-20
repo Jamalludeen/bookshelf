@@ -143,6 +143,7 @@ def read_user_exists(user_id: int = Path(..., ge=1), db: Session = Depends(datab
 
 @router.get("/summary", response_model=schemas.UserSummary)
 def read_user_summary(db: Session = Depends(database.get_db)):
+    # Summary endpoint gives a lightweight aggregate for dashboards.
     return crud.get_user_summary(db=db)
 
 
