@@ -60,6 +60,7 @@ def read_users(
     normalized_username_query = _normalize_optional_query(username_query)
     normalized_email_query = _normalize_optional_query(email_query)
     # Keep filter handling centralized in CRUD helpers.
+    # This keeps the router thin and easier to scan.
     users = crud.get_users(
         db=db,
         skip=skip,
