@@ -46,6 +46,7 @@ def _normalize_optional_text(value: Optional[str]) -> Optional[str]:
     """Trim optional text values while preserving `None`."""
     if value is None:
         return None
+    # Whitespace-only strings collapse to an empty string here.
     return value.strip()
 
 

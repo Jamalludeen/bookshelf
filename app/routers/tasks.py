@@ -94,6 +94,7 @@ def read_task_summary(
     db: Session = Depends(database.get_db),
 ):
     # Optional owner filter enables both global and per-user summaries.
+    # This endpoint is intentionally lightweight.
     return crud.get_task_summary(db=db, owner_id=owner_id)
 
 
