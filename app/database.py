@@ -25,6 +25,7 @@ def masked_database_url() -> str:
                 return f"{user}:*****@{tail}"
     except Exception:
         pass
+    # Leave sqlite URLs unchanged so local paths stay readable.
     # SQLite URLs and malformed inputs fall back to the original value.
     return url
 
