@@ -50,6 +50,7 @@ def on_startup():
     except Exception:
         masked = "unknown"
     # This helps confirm which configuration the app booted with.
+    # Keep startup logs short so they stay readable in local terminals.
     logger.info("startup: version=%s db=%s", app.version, masked)
 
 
