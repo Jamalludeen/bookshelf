@@ -45,6 +45,10 @@ Version check:
 
 curl -s http://127.0.0.1:8000/version
 
+Stats check:
+
+curl -s http://127.0.0.1:8000/stats
+
 curl -s http://127.0.0.1:8000/
 
 Maintainer: maintainer@example.com
