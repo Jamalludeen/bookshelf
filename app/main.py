@@ -57,6 +57,7 @@ def on_startup():
 @app.middleware("http")
 async def add_observability_headers(request: Request, call_next):
     # Preserve inbound request id when available for cross-service tracing.
+    # Fall back to a generated UUID when clients do not provide one.
     request_id = request.headers.get("x-request-id", str(uuid4()))
     start_time = perf_counter()
     response = await call_next(request)
