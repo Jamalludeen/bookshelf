@@ -199,6 +199,7 @@ def export_tasks_csv(
     sort_dir: schemas.TaskSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db),
 ):
+    # Export mirrors task list filtering for predictable CSV output.
     normalized_title_query = _normalize_optional_query(title_query)
     normalized_description_query = _normalize_optional_query(description_query)
     total = crud.count_tasks(
