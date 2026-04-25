@@ -7,6 +7,7 @@ TaskSortBy = Literal["id", "title", "completed"]
 TaskSortDir = Literal["asc", "desc"]
 UserSortBy = Literal["id", "username", "email", "is_active"]
 UserSortDir = Literal["asc", "desc"]
+# Sorting literals intentionally constrain query params to known safe fields.
 
 
 class TaskBase(BaseModel):

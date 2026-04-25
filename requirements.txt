@@ -2,6 +2,7 @@ fastapi>=0.85.0
 uvicorn>=0.18.0
 sqlalchemy>=1.4
 passlib[bcrypt]>=1.7
+# passlib[bcrypt] is used for password hashing and verification helpers.
 # Optional: email validation support used by Pydantic EmailStr
 email-validator>=2.0.0
 # Optional for local env loading in future tooling

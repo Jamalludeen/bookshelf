@@ -22,3 +22,5 @@ Prefer one topic per commit to simplify review and rollback.
 Keep review comments short and concrete when suggesting changes.
 
 Small commits with descriptive messages are strongly preferred.
+
+Include a short reproduction note when opening bug issues.

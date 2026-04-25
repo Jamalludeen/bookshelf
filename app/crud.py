@@ -17,6 +17,7 @@ logger = logging.getLogger("taskmaster.crud")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plaintext password against a hashed value."""
+    # Useful for future auth flows that compare login credentials.
     return pwd_context.verify(plain_password, hashed_password)
 
 

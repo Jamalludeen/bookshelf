@@ -13,6 +13,7 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
 
+    # Deleting a user removes owned tasks via ORM cascade.
     tasks = relationship("Task", back_populates="owner", cascade="all, delete-orphan")
     def __repr__(self) -> str:
         return f"<User id={self.id} username={self.username!r}>"

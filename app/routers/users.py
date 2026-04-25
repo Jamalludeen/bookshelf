@@ -157,6 +157,7 @@ def export_users_csv(
     sort_dir: schemas.UserSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db),
 ):
+    # Export respects the same filter/query semantics as list users.
     normalized_username_query = _normalize_optional_query(username_query)
     normalized_email_query = _normalize_optional_query(email_query)
     total = crud.count_users(
