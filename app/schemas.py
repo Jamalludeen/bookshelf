@@ -14,7 +14,7 @@ class TaskBase(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     description: Optional[str] = Field(default=None, max_length=1000)
     completed: bool = False
-    
+
     class Config:
         schema_extra = {
             "example": {"title": "Buy groceries", "description": "Milk, eggs, bread", "completed": False}
