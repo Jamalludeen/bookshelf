@@ -200,6 +200,7 @@ def export_tasks_csv(
     db: Session = Depends(database.get_db),
 ):
     # Export mirrors task list filtering for predictable CSV output.
+    # Keep the same query semantics as the JSON list endpoint.
     normalized_title_query = _normalize_optional_query(title_query)
     normalized_description_query = _normalize_optional_query(description_query)
     total = crud.count_tasks(
