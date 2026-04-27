@@ -7,3 +7,4 @@ run:
 # Use `make run` for a one-command local dev server.
 # Add more targets here (lint/test) as the project grows.
 # Keep target names short and obvious.
+# This target assumes dependencies are already installed.
