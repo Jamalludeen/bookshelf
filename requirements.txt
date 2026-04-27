@@ -5,6 +5,7 @@ passlib[bcrypt]>=1.7
 # passlib[bcrypt] is used for password hashing and verification helpers.
 # Optional: email validation support used by Pydantic EmailStr
 email-validator>=2.0.0
+# bcrypt wheels keep local installs simple on common platforms.
 # Optional for local env loading in future tooling
 python-dotenv>=1.0.0
 
