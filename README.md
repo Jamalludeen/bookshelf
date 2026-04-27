@@ -49,6 +49,8 @@ Stats check:
 
 curl -s http://127.0.0.1:8000/stats
 
+Use `/stats` when you want a quick aggregate snapshot of the database.
+
 Liveness check:
 
 curl -s http://127.0.0.1:8000/health/live
