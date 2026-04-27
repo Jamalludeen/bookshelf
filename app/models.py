@@ -27,6 +27,7 @@ class Task(Base):
     completed = Column(Boolean, default=False)
     owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
+    # Relationship back to the user keeps owner lookups straightforward.
     owner = relationship("User", back_populates="tasks")
 
     def __repr__(self) -> str:

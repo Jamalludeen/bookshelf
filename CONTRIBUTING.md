@@ -24,3 +24,5 @@ Keep review comments short and concrete when suggesting changes.
 Small commits with descriptive messages are strongly preferred.
 
 Include a short reproduction note when opening bug issues.
+
+Add labels like `bug` or `enhancement` to keep triage organized.

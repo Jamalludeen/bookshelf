@@ -14,6 +14,10 @@ The `/redoc` page is useful for a more readable API reference.
 
 Use `/openapi.json` when you need schema-driven client generation.
 
+Quick tip: copy the curl snippets above into a shell to smoke test the app.
+
+The API version is shown in the root response and on response headers.
+
 ## Quick start
 
 1. Create and activate a virtual environment.
@@ -48,6 +52,8 @@ curl -s http://127.0.0.1:8000/version
 Stats check:
 
 curl -s http://127.0.0.1:8000/stats
+
+Use `/stats` when you want a quick aggregate snapshot of the database.
 
 Liveness check:
 

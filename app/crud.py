@@ -34,6 +34,7 @@ def _unique_task_ids(task_ids: list[int]) -> list[int]:
 
 
 def _normalize_text(value: str) -> str:
+    # Shared normalization keeps create/update paths consistent.
     return value.strip()
 
 

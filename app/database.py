@@ -41,6 +41,7 @@ SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     expire_on_commit=False,
+    # Reuse the shared engine so sessions are consistent across requests.
     bind=engine
 )
 
