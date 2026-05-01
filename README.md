@@ -16,6 +16,8 @@ Use `/openapi.json` when you need schema-driven client generation.
 
 Quick tip: copy the curl snippets above into a shell to smoke test the app.
 
+Tip: keep the terminal open so reload mode can restart the app automatically.
+
 The API version is shown in the root response and on response headers.
 
 ## Quick start
