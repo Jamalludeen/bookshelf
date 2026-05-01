@@ -41,6 +41,8 @@ Health details:
 
 curl -s http://127.0.0.1:8000/health/db
 
+Tip: `/health/db` is the fastest way to verify database connectivity.
+
 Readiness probe:
 
 curl -s http://127.0.0.1:8000/health/ready
