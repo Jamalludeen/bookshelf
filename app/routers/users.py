@@ -146,6 +146,7 @@ def read_user_exists(user_id: int = Path(..., ge=1), db: Session = Depends(datab
 def read_user_summary(db: Session = Depends(database.get_db)):
     # Summary endpoint gives a lightweight aggregate for dashboards.
     # It avoids loading full user rows unless needed elsewhere.
+    # The CRUD layer does the counting work.
     return crud.get_user_summary(db=db)
 
 

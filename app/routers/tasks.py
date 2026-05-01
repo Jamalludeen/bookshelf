@@ -95,6 +95,7 @@ def read_task_summary(
 ):
     # Optional owner filter enables both global and per-user summaries.
     # This endpoint is intentionally lightweight.
+    # Aggregation is delegated to the CRUD helpers.
     return crud.get_task_summary(db=db, owner_id=owner_id)
 
 

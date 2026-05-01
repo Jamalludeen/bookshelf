@@ -16,6 +16,8 @@ Use `/openapi.json` when you need schema-driven client generation.
 
 Quick tip: copy the curl snippets above into a shell to smoke test the app.
 
+Tip: keep the terminal open so reload mode can restart the app automatically.
+
 The API version is shown in the root response and on response headers.
 
 ## Quick start
@@ -41,6 +43,8 @@ Health details:
 
 curl -s http://127.0.0.1:8000/health/db
 
+Tip: `/health/db` is the fastest way to verify database connectivity.
+
 Readiness probe:
 
 curl -s http://127.0.0.1:8000/health/ready
@@ -58,6 +62,8 @@ Use `/stats` when you want a quick aggregate snapshot of the database.
 Liveness check:
 
 curl -s http://127.0.0.1:8000/health/live
+
+Tip: `/health/live` is handy for simple process-up checks.
 
 curl -s http://127.0.0.1:8000/
 

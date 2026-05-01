@@ -9,6 +9,7 @@ SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 
 def get_database_url() -> str:
     """Return `DATABASE_URL` when set, otherwise use the local SQLite default."""
+    # Falling back to SQLite keeps a fresh checkout runnable.
     return os.environ.get("DATABASE_URL", SQLALCHEMY_DATABASE_URL)
 
 

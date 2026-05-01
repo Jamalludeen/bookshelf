@@ -8,3 +8,4 @@ run:
 # Add more targets here (lint/test) as the project grows.
 # Keep target names short and obvious.
 # This target assumes dependencies are already installed.
+# `uvicorn` is launched with reload for fast feedback.
