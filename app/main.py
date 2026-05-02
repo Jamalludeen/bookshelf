@@ -74,6 +74,7 @@ async def add_observability_headers(request: Request, call_next):
 @app.middleware("http")
 async def disable_cache_for_system_endpoints(request: Request, call_next):
     # Health and status endpoints should not be cached by intermediaries.
+    # This avoids stale probe results from proxies.
     response = await call_next(request)
     if request.url.path in {
         "/",
