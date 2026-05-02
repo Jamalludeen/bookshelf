@@ -96,6 +96,7 @@ def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code,
         content={
+            # Include path to help clients correlate failures quickly.
             "detail": exc.detail,
             "path": request.url.path,
         },
