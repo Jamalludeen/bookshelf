@@ -71,6 +71,8 @@ curl -s http://127.0.0.1:8000/uptime
 
 curl -s http://127.0.0.1:8000/
 
+Tip: the root endpoint includes a welcome message and API version.
+
 Maintainer: maintainer@example.com
 
 Commit style: small, focused commits. See CONTRIBUTING for tips.
