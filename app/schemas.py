@@ -47,6 +47,7 @@ class TaskBulkUpdateRequest(BaseModel):
 
     @validator("task_ids")
     def validate_task_ids(cls, value: List[int]) -> List[int]:
+        # Reject invalid IDs early before DB access.
         if any(task_id <= 0 for task_id in value):
             raise ValueError("task_ids must contain only positive integers")
         return value
