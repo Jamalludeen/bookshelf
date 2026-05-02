@@ -28,3 +28,5 @@ Include a short reproduction note when opening bug issues.
 Add labels like `bug` or `enhancement` to keep triage organized.
 
 Link to the relevant endpoint or file when reporting a bug.
+
+Include expected vs actual behavior in bug reports when possible.
