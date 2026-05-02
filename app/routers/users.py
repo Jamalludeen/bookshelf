@@ -77,6 +77,7 @@ def read_users(
         email_query=normalized_email_query,
         is_active=is_active,
     )
+    # Expose total rows for client-side pagination.
     response.headers["X-Total-Count"] = str(total)
     return users
 

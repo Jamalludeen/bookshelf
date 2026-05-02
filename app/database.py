@@ -33,6 +33,7 @@ def masked_database_url() -> str:
 engine = create_engine(
     # Pull from env when present to keep local/prod config flexible.
     get_database_url(),
+    # Needed for SQLite usage from FastAPI request threads.
     connect_args={"check_same_thread": False},
     # Pre-ping avoids stale pooled connections after DB restarts.
     pool_pre_ping=True,
@@ -41,6 +42,7 @@ engine = create_engine(
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
+    # Keep objects readable after commit without explicit refresh in some flows.
     expire_on_commit=False,
     # Reuse the shared engine so sessions are consistent across requests.
     bind=engine

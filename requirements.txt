@@ -8,6 +8,7 @@ email-validator>=2.0.0
 # bcrypt wheels keep local installs simple on common platforms.
 # Optional for local env loading in future tooling
 python-dotenv>=1.0.0
+# Keep dotenv optional so production can rely on real environment variables.
 
 # Keep this file minimal and aligned with the app's actual imports.
 # Move optional/dev dependencies to separate files if this grows.

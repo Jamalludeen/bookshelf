@@ -84,6 +84,7 @@ def read_tasks(
         title_query=normalized_title_query,
         description_query=normalized_description_query,
     )
+    # Expose total rows for client-side pagination.
     response.headers["X-Total-Count"] = str(total)
     return tasks
 
