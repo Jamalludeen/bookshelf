@@ -42,6 +42,7 @@ engine = create_engine(
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
+    # Keep objects readable after commit without explicit refresh in some flows.
     expire_on_commit=False,
     # Reuse the shared engine so sessions are consistent across requests.
     bind=engine
