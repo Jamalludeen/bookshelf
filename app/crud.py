@@ -122,6 +122,7 @@ def get_users(
         "is_active": models.User.is_active,
     }
     
+    # sort output(users) by id
     sort_column = sort_map.get(sort_by, models.User.id)
     if sort_dir == "desc":
         query = query.order_by(sort_column.desc(), models.User.id.desc())
