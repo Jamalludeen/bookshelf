@@ -107,6 +107,7 @@ def get_users(
     sort_by: schemas.UserSortBy = "id",
     sort_dir: schemas.UserSortDir = "asc",
 ):
+    # apply the filters for user
     query = _apply_user_filters(
         db.query(models.User),
         username_query=username_query,
@@ -121,6 +122,7 @@ def get_users(
         "is_active": models.User.is_active,
     }
     
+    # sort output(users) by id
     sort_column = sort_map.get(sort_by, models.User.id)
     if sort_dir == "desc":
         query = query.order_by(sort_column.desc(), models.User.id.desc())
