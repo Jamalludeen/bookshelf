@@ -107,6 +107,7 @@ def get_users(
     sort_by: schemas.UserSortBy = "id",
     sort_dir: schemas.UserSortDir = "asc",
 ):
+    # apply the filters for user
     query = _apply_user_filters(
         db.query(models.User),
         username_query=username_query,
