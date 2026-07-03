@@ -252,6 +252,7 @@ def get_tasks(
         "title": models.Task.title,
         "completed": models.Task.completed,
     }
+    
     sort_column = sort_map.get(sort_by, models.Task.id)
     if sort_dir == "desc":
         query = query.order_by(sort_column.desc(), models.Task.id.desc())
