@@ -55,6 +55,8 @@ def _normalize_optional_text(value: Optional[str]) -> Optional[str]:
 
 
 def _apply_user_filters(query, username_query: Optional[str], email_query: Optional[str], is_active: Optional[bool]):
+    username_query = _normalize_optional_text(username_query)
+    email_query = _normalize_optional_text(email_query)
     if username_query:
         query = query.filter(models.User.username.ilike(f"%{username_query}%"))
     if email_query:
