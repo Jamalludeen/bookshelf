@@ -67,6 +67,7 @@ async def add_observability_headers(request: Request, call_next):
     response.headers["X-Request-ID"] = request_id
     response.headers["X-Process-Time"] = f"{process_time:.6f}"
     response.headers["X-API-Version"] = app.version
+    response.headers["X-TaskMaster-Version"] = app.version
     response.headers["X-Service-Name"] = SERVICE_NAME
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
