@@ -73,6 +73,8 @@ def _apply_task_filters(
     title_query: Optional[str],
     description_query: Optional[str],
 ):
+    title_query = _normalize_optional_text(title_query)
+    description_query = _normalize_optional_text(description_query)
     if completed is not None:
         query = query.filter(models.Task.completed == completed)
     if owner_id is not None:
