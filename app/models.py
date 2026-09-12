@@ -27,7 +27,7 @@ class Task(Base):
     description = Column(String, index=True)
     completed = Column(Boolean, default=False)
     # DB-level cascade complements ORM relationship cascade behavior.
-    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True)
 
     # Relationship back to the user keeps owner lookups straightforward.
     owner = relationship("User", back_populates="tasks")
