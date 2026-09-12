@@ -5,6 +5,8 @@ env/
 .venv/
 *.sqlite3
 *.db
+*.db-shm
+*.db-wal
 __pypackages__/
 .pytest_cache/
 .mypy_cache/
