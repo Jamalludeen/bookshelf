@@ -50,6 +50,12 @@ class TaskUpdate(BaseModel):
             raise ValueError("title must not be blank")
         return stripped
 
+    @validator("description")
+    def normalize_optional_description(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        return value.strip()
+
 
 class TaskBulkUpdateRequest(BaseModel):
     task_ids: List[int] = Field(min_items=1)
