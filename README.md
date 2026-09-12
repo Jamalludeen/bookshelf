@@ -25,7 +25,7 @@ The API version is shown in the root response and on response headers.
 1. Create and activate a virtual environment.
 2. Install dependencies:
 
-   pip install fastapi uvicorn sqlalchemy passlib[bcrypt]
+   pip install -r requirements.txt
 
 3. Run the API:
 
