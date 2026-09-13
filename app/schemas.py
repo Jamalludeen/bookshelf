@@ -41,6 +41,21 @@ class TaskUpdate(BaseModel):
     description: Optional[str] = Field(default=None, max_length=1000)
     completed: Optional[bool] = None
 
+    @validator("title")
+    def validate_optional_title(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("title must not be blank")
+        return stripped
+
+    @validator("description")
+    def normalize_optional_description(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        return value.strip()
+
 
 class TaskBulkUpdateRequest(BaseModel):
     task_ids: List[int] = Field(min_items=1)

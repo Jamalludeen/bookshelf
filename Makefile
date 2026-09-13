@@ -1,8 +1,12 @@
-.PHONY: run
+.PHONY: run health
 
 run:
 	# Use uvicorn reload mode for local development convenience.
 	uvicorn app.main:app --reload --port 8000
+
+health:
+	# Check that the local API process can answer a health request.
+	curl --fail --silent http://127.0.0.1:8000/health
 
 # Use `make run` for a one-command local dev server.
 # Add more targets here (lint/test) as the project grows.

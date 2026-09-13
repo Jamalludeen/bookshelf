@@ -55,6 +55,8 @@ def _normalize_optional_text(value: Optional[str]) -> Optional[str]:
 
 
 def _apply_user_filters(query, username_query: Optional[str], email_query: Optional[str], is_active: Optional[bool]):
+    username_query = _normalize_optional_text(username_query)
+    email_query = _normalize_optional_text(email_query)
     if username_query:
         query = query.filter(models.User.username.ilike(f"%{username_query}%"))
     if email_query:
@@ -71,6 +73,8 @@ def _apply_task_filters(
     title_query: Optional[str],
     description_query: Optional[str],
 ):
+    title_query = _normalize_optional_text(title_query)
+    description_query = _normalize_optional_text(description_query)
     if completed is not None:
         query = query.filter(models.Task.completed == completed)
     if owner_id is not None:
@@ -82,11 +86,11 @@ def _apply_task_filters(
     return query
 
 def get_user_by_username(db: Session, username: str) -> Optional[models.User]:
-    return db.query(models.User).filter(models.User.username == username).first()
+    return db.query(models.User).filter(models.User.username == _normalize_text(username)).first()
 
 
 def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
-    return db.query(models.User).filter(models.User.email == email).first()
+    return db.query(models.User).filter(models.User.email == _normalize_email(email)).first()
 
 
 def get_user_by_id(db: Session, user_id: int):

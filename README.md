@@ -25,7 +25,7 @@ The API version is shown in the root response and on response headers.
 1. Create and activate a virtual environment.
 2. Install dependencies:
 
-   pip install fastapi uvicorn sqlalchemy passlib[bcrypt]
+   pip install -r requirements.txt
 
 3. Run the API:
 
@@ -159,6 +159,7 @@ Notes:
 ## Response headers
 
 - `GET /users`, `GET /users/{user_id}/tasks`, and `GET /tasks` include `X-Total-Count` for total records matching filters.
+- Collection responses also include `X-Pagination-Offset` and `X-Pagination-Limit`.
 - All responses include `X-Request-ID`, `X-Process-Time`, `X-API-Version`, and `X-Service-Name` for tracing and diagnostics.
 - System endpoints also include `Cache-Control: no-store` to prevent stale health/status caching.
 - Send `X-Request-ID` in requests to propagate your own correlation id across logs.

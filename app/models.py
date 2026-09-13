@@ -14,7 +14,12 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     # Deleting a user removes owned tasks via ORM cascade.
-    tasks = relationship("Task", back_populates="owner", cascade="all, delete-orphan")
+    tasks = relationship(
+        "Task",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     # `__repr__` helps debug query results in the shell.
     def __repr__(self) -> str:
         return f"<User id={self.id} username={self.username!r}>"
@@ -27,7 +32,7 @@ class Task(Base):
     description = Column(String, index=True)
     completed = Column(Boolean, default=False)
     # DB-level cascade complements ORM relationship cascade behavior.
-    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True)
 
     # Relationship back to the user keeps owner lookups straightforward.
     owner = relationship("User", back_populates="tasks")

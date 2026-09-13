@@ -79,6 +79,8 @@ def read_users(
     )
     # Expose total rows for client-side pagination.
     response.headers["X-Total-Count"] = str(total)
+    response.headers["X-Pagination-Offset"] = str(skip)
+    response.headers["X-Pagination-Limit"] = str(limit)
     return users
 
 

@@ -67,7 +67,10 @@ async def add_observability_headers(request: Request, call_next):
     response.headers["X-Request-ID"] = request_id
     response.headers["X-Process-Time"] = f"{process_time:.6f}"
     response.headers["X-API-Version"] = app.version
+    response.headers["X-TaskMaster-Version"] = app.version
     response.headers["X-Service-Name"] = SERVICE_NAME
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     return response
 
 
@@ -105,6 +108,7 @@ def http_exception_handler(request: Request, exc: HTTPException):
 
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.warning("Validation error: method=%s path=%s", request.method, request.url.path)
     return JSONResponse(
         status_code=422,
         content={
