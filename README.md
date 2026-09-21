@@ -65,6 +65,8 @@ curl -s http://127.0.0.1:8000/health/live
 
 Tip: `/health/live` is handy for simple process-up checks.
 
+Use `LOG_LEVEL=debug ./run.sh` when troubleshooting local startup behavior.
+
 Uptime check:
 
 curl -s http://127.0.0.1:8000/uptime
