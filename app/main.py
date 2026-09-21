@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from . import crud, database, models, schemas
+from . import __version__, crud, database, models, schemas
 from .routers import all_routers
 
 # Create Database Tables
@@ -18,7 +18,7 @@ models.Base.metadata.create_all(bind=database.engine)
 app = FastAPI(
     title="TaskMaster API",
     description="A simple API for managing users and tasks.",
-    version="0.1.2",
+    version=__version__,
     contact={"name": "TaskMaster Maintainers"},
     license_info={"name": "MIT"},
     openapi_tags=[
