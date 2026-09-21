@@ -1,4 +1,4 @@
-.PHONY: run health info
+.PHONY: run health info check
 
 run:
 	# Use uvicorn reload mode for local development convenience.
@@ -10,6 +10,9 @@ health:
 
 info:
 	@printf 'Run: make run\nCheck: make health\n'
+
+check:
+	python -m compileall app
 
 # Use `make run` for a one-command local dev server.
 # Add more targets here (lint/test) as the project grows.
