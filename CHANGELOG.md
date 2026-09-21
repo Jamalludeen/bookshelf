@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-09-21
+
+- Added a focused maintenance batch for local development ergonomics.
+
 ## 2026-04-17
 
 - Added another batch of rapid micro-improvements and documentation tweaks.
