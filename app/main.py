@@ -64,6 +64,7 @@ async def add_observability_headers(request: Request, call_next):
     start_time = perf_counter()
     response = await call_next(request)
     process_time = perf_counter() - start_time
+    logger.info("request: method=%s path=%s status=%s", request.method, request.url.path, response.status_code)
     response.headers["X-Request-ID"] = request_id
     response.headers["X-Process-Time"] = f"{process_time:.6f}"
     response.headers["X-API-Version"] = app.version
