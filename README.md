@@ -55,6 +55,8 @@ Version check:
 
 curl -s http://127.0.0.1:8000/version
 
+Use the version response when confirming a running process matches the checked-out code.
+
 Stats check:
 
 curl -s http://127.0.0.1:8000/stats
