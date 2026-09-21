@@ -37,7 +37,7 @@ engine = create_engine(
     connect_args={"check_same_thread": False, "timeout": 10},
     # Pre-ping avoids stale pooled connections after DB restarts.
     pool_pre_ping=True,
-)
+    pool_recycle=1800,
 
 SessionLocal = sessionmaker(
     autocommit=False,
