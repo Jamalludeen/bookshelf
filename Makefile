@@ -1,4 +1,4 @@
-.PHONY: run health
+.PHONY: run health info
 
 run:
 	# Use uvicorn reload mode for local development convenience.
