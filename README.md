@@ -39,6 +39,8 @@ Quick check:
 
 curl -s http://127.0.0.1:8000/health
 
+The command should return a JSON object with `status` and `database` fields.
+
 Health details:
 
 curl -s http://127.0.0.1:8000/health/db
