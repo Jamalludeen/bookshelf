@@ -35,6 +35,8 @@ The API version is shown in the root response and on response headers.
 
    make run
 
+   Validate the package syntax with `make check`.
+
 Quick check:
 
 curl -s http://127.0.0.1:8000/health
