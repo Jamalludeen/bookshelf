@@ -198,7 +198,10 @@ def export_users_csv(
     return StreamingResponse(
         iter([buffer.getvalue()]),
         media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": 'attachment; filename="users.csv"'},
+        headers={
+            "Content-Disposition": 'attachment; filename="users.csv"',
+            "Cache-Control": "no-store",
+        },
     )
 
 
