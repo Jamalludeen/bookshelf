@@ -117,7 +117,7 @@ Base URLs are listed with common query parameters.
 ### Tasks
 
 - POST /tasks
-- GET /tasks?skip=0&limit=100&completed=&owner_id=&title_query=&description_query=&sort_by=&sort_dir=
+- GET /tasks?skip=0&limit=100&completed=&owner_id=&title_query=&description_query=&sort_by=id|title|completed|owner_id&sort_dir=asc|desc
 - GET /tasks/summary?owner_id=
 - GET /tasks/owner/{owner_id}/summary
 - GET /tasks/completed?skip=0&limit=100&owner_id=&sort_by=&sort_dir=
