@@ -269,6 +269,7 @@ def export_user_tasks_csv(user_id: int = Path(..., ge=1), db: Session = Depends(
         headers={
             "Content-Disposition": f'attachment; filename="user-{user_id}-tasks.csv"',
             "Cache-Control": "no-store",
+            "X-Export-Row-Count": str(total),
         },
     )
 
