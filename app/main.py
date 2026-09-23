@@ -74,6 +74,7 @@ async def add_observability_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-Robots-Tag"] = "noindex, nofollow"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Referrer-Policy"] = "no-referrer"
     return response
 
 
