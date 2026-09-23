@@ -236,6 +236,8 @@ def read_user_tasks(
         raise HTTPException(status_code=404, detail="User not found")
     tasks = crud.get_user_tasks(db=db, user_id=user_id, skip=skip, limit=limit)
     response.headers["X-Total-Count"] = str(crud.count_user_tasks(db=db, user_id=user_id))
+    response.headers["X-Pagination-Offset"] = str(skip)
+    response.headers["X-Pagination-Limit"] = str(limit)
     return tasks
 
 
