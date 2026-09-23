@@ -171,6 +171,7 @@ Notes:
 - All responses include `X-Request-ID`, `X-Process-Time`, `X-API-Version`, and `X-Service-Name` for tracing and diagnostics.
 - System endpoints also include `Cache-Control: no-store` to prevent stale health/status caching.
 - CSV export endpoints also use `Cache-Control: no-store` because exports may contain current user data.
+- CSV export endpoints include `X-Export-Row-Count` with the number of data rows in the file.
 - Send `X-Request-ID` in requests to propagate your own correlation id across logs.
 
 ## Export support
