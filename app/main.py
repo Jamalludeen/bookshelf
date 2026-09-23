@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from . import crud, database, models, schemas
+from . import __version__, crud, database, models, schemas
 from .routers import all_routers
 
 # Create Database Tables
@@ -18,7 +18,7 @@ models.Base.metadata.create_all(bind=database.engine)
 app = FastAPI(
     title="TaskMaster API",
     description="A simple API for managing users and tasks.",
-    version="0.1.2",
+    version=__version__,
     contact={"name": "TaskMaster Maintainers"},
     license_info={"name": "MIT"},
     openapi_tags=[
@@ -64,12 +64,15 @@ async def add_observability_headers(request: Request, call_next):
     start_time = perf_counter()
     response = await call_next(request)
     process_time = perf_counter() - start_time
+    logger.info("request: method=%s path=%s status=%s", request.method, request.url.path, response.status_code)
     response.headers["X-Request-ID"] = request_id
     response.headers["X-Process-Time"] = f"{process_time:.6f}"
     response.headers["X-API-Version"] = app.version
     response.headers["X-TaskMaster-Version"] = app.version
     response.headers["X-Service-Name"] = SERVICE_NAME
     response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     return response
 

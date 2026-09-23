@@ -198,7 +198,10 @@ def export_users_csv(
     return StreamingResponse(
         iter([buffer.getvalue()]),
         media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": 'attachment; filename="users.csv"'},
+        headers={
+            "Content-Disposition": 'attachment; filename="users.csv"',
+            "Cache-Control": "no-store",
+        },
     )
 
 
@@ -256,7 +259,10 @@ def export_user_tasks_csv(user_id: int = Path(..., ge=1), db: Session = Depends(
     return StreamingResponse(
         iter([buffer.getvalue()]),
         media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": f'attachment; filename="user-{user_id}-tasks.csv"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="user-{user_id}-tasks.csv"',
+            "Cache-Control": "no-store",
+        },
     )
 
 

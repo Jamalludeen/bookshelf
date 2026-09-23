@@ -93,7 +93,7 @@ def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.email == _normalize_email(email)).first()
 
 
-def get_user_by_id(db: Session, user_id: int):
+def get_user_by_id(db: Session, user_id: int) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
@@ -289,6 +289,7 @@ def get_task_by_id(db: Session, task_id: int) -> Optional[models.Task]:
 
 def task_exists(db: Session, task_id: int) -> bool:
     return db.query(models.Task.id).filter(models.Task.id == task_id).first() is not None
+
 
 def create_user_task(db: Session, task: schemas.TaskCreate, user_id: int):
     logger.debug("create_user_task: creating task for user_id=%s title=%s", user_id, task.title)

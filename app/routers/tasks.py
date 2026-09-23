@@ -242,7 +242,10 @@ def export_tasks_csv(
     return StreamingResponse(
         iter([buffer.getvalue()]),
         media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": 'attachment; filename="tasks.csv"'},
+        headers={
+            "Content-Disposition": 'attachment; filename="tasks.csv"',
+            "Cache-Control": "no-store",
+        },
     )
 
 

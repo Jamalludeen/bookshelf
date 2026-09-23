@@ -17,6 +17,8 @@ Optional: set `DATABASE_URL` to point to a different database backend.
 
 Please keep PRs small and focused when possible.
 
+Run `make check` before opening a pull request.
+
 Prefer one topic per commit to simplify review and rollback.
 
 Keep review comments short and concrete when suggesting changes.

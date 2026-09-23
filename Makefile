@@ -1,4 +1,4 @@
-.PHONY: run health
+.PHONY: run health info check
 
 run:
 	# Use uvicorn reload mode for local development convenience.
@@ -7,6 +7,12 @@ run:
 health:
 	# Check that the local API process can answer a health request.
 	curl --fail --silent http://127.0.0.1:8000/health
+
+info:
+	@printf 'Run: make run\nCheck: make health\n'
+
+check:
+	python -m compileall app
 
 # Use `make run` for a one-command local dev server.
 # Add more targets here (lint/test) as the project grows.
