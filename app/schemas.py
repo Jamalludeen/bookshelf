@@ -54,7 +54,7 @@ class TaskUpdate(BaseModel):
     def normalize_optional_description(cls, value: Optional[str]) -> Optional[str]:
         if value is None:
             return None
-        return value.strip()
+        return value.strip() or None
 
 
 class TaskBulkUpdateRequest(BaseModel):
