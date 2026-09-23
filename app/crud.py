@@ -255,6 +255,7 @@ def get_tasks(
         "id": models.Task.id,
         "title": models.Task.title,
         "completed": models.Task.completed,
+        "owner_id": models.Task.owner_id,
     }
     
     sort_column = sort_map.get(sort_by, models.Task.id)

@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr, Field, validator
 from typing import List, Optional, Literal
 
 
-TaskSortBy = Literal["id", "title", "completed"]
+TaskSortBy = Literal["id", "title", "completed", "owner_id"]
 TaskSortDir = Literal["asc", "desc"]
 UserSortBy = Literal["id", "username", "email", "is_active"]
 UserSortDir = Literal["asc", "desc"]
