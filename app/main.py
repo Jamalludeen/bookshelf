@@ -126,7 +126,8 @@ def _is_database_reachable() -> bool:
     try:
         with database.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
-    except (SQLAlchemyError, Exception):
+    except (SQLAlchemyError, Exception) as exc:
+        logger.warning("database health probe failed: %s", exc)
         return False
     return True
 
