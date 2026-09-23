@@ -205,6 +205,7 @@ def export_users_csv(
         headers={
             "Content-Disposition": 'attachment; filename="users.csv"',
             "Cache-Control": "no-store",
+            "X-Export-Row-Count": str(total),
         },
     )
 

@@ -249,6 +249,7 @@ def export_tasks_csv(
         headers={
             "Content-Disposition": 'attachment; filename="tasks.csv"',
             "Cache-Control": "no-store",
+            "X-Export-Row-Count": str(total),
         },
     )
 
