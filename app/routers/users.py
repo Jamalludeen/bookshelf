@@ -103,6 +103,8 @@ def read_active_users(
     )
     total = crud.count_users(db=db, is_active=True)
     response.headers["X-Total-Count"] = str(total)
+    response.headers["X-Pagination-Offset"] = str(skip)
+    response.headers["X-Pagination-Limit"] = str(limit)
     return users
 
 
