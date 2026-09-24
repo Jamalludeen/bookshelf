@@ -231,11 +231,20 @@ def read_user_tasks(
     user_id: int = Path(..., ge=1),
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
+    sort_by: schemas.UserTaskSortBy = Query(default="id"),
+    sort_dir: schemas.TaskSortDir = Query(default="asc"),
     db: Session = Depends(database.get_db),
 ):
     if not crud.user_exists(db=db, user_id=user_id):
         raise HTTPException(status_code=404, detail="User not found")
-    tasks = crud.get_user_tasks(db=db, user_id=user_id, skip=skip, limit=limit)
+    tasks = crud.get_user_tasks(
+        db=db,
+        user_id=user_id,
+        skip=skip,
+        limit=limit,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
     response.headers["X-Total-Count"] = str(crud.count_user_tasks(db=db, user_id=user_id))
     response.headers["X-Pagination-Offset"] = str(skip)
     response.headers["X-Pagination-Limit"] = str(limit)
