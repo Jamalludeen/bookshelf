@@ -110,7 +110,7 @@ Base URLs are listed with common query parameters.
 - PATCH /users/{user_id}/status
 - GET /users/{user_id}
 - GET /users/{user_id}/summary
-- GET /users/{user_id}/tasks?skip=0&limit=100
+- GET /users/{user_id}/tasks?skip=0&limit=100&sort_by=id|title|completed&sort_dir=asc|desc
 - GET /users/{user_id}/tasks/export
 - DELETE /users/{user_id}
 
