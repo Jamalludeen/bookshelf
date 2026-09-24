@@ -81,6 +81,7 @@ def read_users(
     response.headers["X-Total-Count"] = str(total)
     response.headers["X-Pagination-Offset"] = str(skip)
     response.headers["X-Pagination-Limit"] = str(limit)
+    response.headers["X-Pagination-Page"] = str(skip // limit + 1)
     return users
 
 
