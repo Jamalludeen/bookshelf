@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr, Field, validator
 from typing import List, Optional, Literal
 
 
-TaskSortBy = Literal["id", "title", "completed"]
+TaskSortBy = Literal["id", "title", "completed", "owner_id"]
 TaskSortDir = Literal["asc", "desc"]
 UserSortBy = Literal["id", "username", "email", "is_active"]
 UserSortDir = Literal["asc", "desc"]
@@ -54,7 +54,7 @@ class TaskUpdate(BaseModel):
     def normalize_optional_description(cls, value: Optional[str]) -> Optional[str]:
         if value is None:
             return None
-        return value.strip()
+        return value.strip() or None
 
 
 class TaskBulkUpdateRequest(BaseModel):

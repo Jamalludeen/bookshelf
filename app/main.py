@@ -74,6 +74,7 @@ async def add_observability_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-Robots-Tag"] = "noindex, nofollow"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Referrer-Policy"] = "no-referrer"
     return response
 
 
@@ -126,7 +127,8 @@ def _is_database_reachable() -> bool:
     try:
         with database.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
-    except (SQLAlchemyError, Exception):
+    except (SQLAlchemyError, Exception) as exc:
+        logger.warning("database health probe failed: %s", exc)
         return False
     return True
 

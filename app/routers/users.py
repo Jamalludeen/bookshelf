@@ -103,6 +103,8 @@ def read_active_users(
     )
     total = crud.count_users(db=db, is_active=True)
     response.headers["X-Total-Count"] = str(total)
+    response.headers["X-Pagination-Offset"] = str(skip)
+    response.headers["X-Pagination-Limit"] = str(limit)
     return users
 
 
@@ -125,6 +127,8 @@ def read_inactive_users(
     )
     total = crud.count_users(db=db, is_active=False)
     response.headers["X-Total-Count"] = str(total)
+    response.headers["X-Pagination-Offset"] = str(skip)
+    response.headers["X-Pagination-Limit"] = str(limit)
     return users
 
 
@@ -201,6 +205,7 @@ def export_users_csv(
         headers={
             "Content-Disposition": 'attachment; filename="users.csv"',
             "Cache-Control": "no-store",
+            "X-Export-Row-Count": str(total),
         },
     )
 
@@ -232,6 +237,8 @@ def read_user_tasks(
         raise HTTPException(status_code=404, detail="User not found")
     tasks = crud.get_user_tasks(db=db, user_id=user_id, skip=skip, limit=limit)
     response.headers["X-Total-Count"] = str(crud.count_user_tasks(db=db, user_id=user_id))
+    response.headers["X-Pagination-Offset"] = str(skip)
+    response.headers["X-Pagination-Limit"] = str(limit)
     return tasks
 
 
@@ -262,6 +269,7 @@ def export_user_tasks_csv(user_id: int = Path(..., ge=1), db: Session = Depends(
         headers={
             "Content-Disposition": f'attachment; filename="user-{user_id}-tasks.csv"',
             "Cache-Control": "no-store",
+            "X-Export-Row-Count": str(total),
         },
     )
 

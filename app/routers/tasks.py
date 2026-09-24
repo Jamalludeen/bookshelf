@@ -130,6 +130,8 @@ def read_completed_tasks(
     )
     total = crud.count_tasks(db=db, completed=True, owner_id=owner_id)
     response.headers["X-Total-Count"] = str(total)
+    response.headers["X-Pagination-Offset"] = str(skip)
+    response.headers["X-Pagination-Limit"] = str(limit)
     return tasks
 
 
@@ -154,6 +156,8 @@ def read_pending_tasks(
     )
     total = crud.count_tasks(db=db, completed=False, owner_id=owner_id)
     response.headers["X-Total-Count"] = str(total)
+    response.headers["X-Pagination-Offset"] = str(skip)
+    response.headers["X-Pagination-Limit"] = str(limit)
     return tasks
 
 
@@ -245,6 +249,7 @@ def export_tasks_csv(
         headers={
             "Content-Disposition": 'attachment; filename="tasks.csv"',
             "Cache-Control": "no-store",
+            "X-Export-Row-Count": str(total),
         },
     )
 

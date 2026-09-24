@@ -50,8 +50,8 @@ def _normalize_optional_text(value: Optional[str]) -> Optional[str]:
     """Trim optional text values while preserving `None`."""
     if value is None:
         return None
-    # Whitespace-only strings collapse to an empty string here.
-    return value.strip()
+    normalized = value.strip()
+    return normalized or None
 
 
 def _apply_user_filters(query, username_query: Optional[str], email_query: Optional[str], is_active: Optional[bool]):
@@ -255,6 +255,7 @@ def get_tasks(
         "id": models.Task.id,
         "title": models.Task.title,
         "completed": models.Task.completed,
+        "owner_id": models.Task.owner_id,
     }
     
     sort_column = sort_map.get(sort_by, models.Task.id)
