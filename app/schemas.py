@@ -5,6 +5,7 @@ from typing import List, Optional, Literal
 
 TaskSortBy = Literal["id", "title", "completed", "owner_id"]
 TaskSortDir = Literal["asc", "desc"]
+UserTaskSortBy = Literal["id", "title", "completed"]
 UserSortBy = Literal["id", "username", "email", "is_active"]
 UserSortDir = Literal["asc", "desc"]
 # Sorting literals intentionally constrain query params to known safe fields.
