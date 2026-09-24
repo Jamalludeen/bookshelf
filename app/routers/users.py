@@ -251,6 +251,7 @@ def read_user_tasks(
     response.headers["X-Total-Count"] = str(crud.count_user_tasks(db=db, user_id=user_id))
     response.headers["X-Pagination-Offset"] = str(skip)
     response.headers["X-Pagination-Limit"] = str(limit)
+    response.headers["X-Pagination-Page"] = str(skip // limit + 1)
     return tasks
 
 
