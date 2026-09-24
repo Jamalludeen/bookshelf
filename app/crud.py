@@ -321,6 +321,9 @@ def update_task(db: Session, task_id: int, task_update: schemas.TaskUpdate):
         return None
 
     update_data = task_update.dict(exclude_unset=True)
+    if not update_data:
+        return db_task
+
     if "title" in update_data and update_data["title"] is not None:
         update_data["title"] = _normalize_text(update_data["title"])
     if "description" in update_data:
