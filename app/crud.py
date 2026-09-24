@@ -151,15 +151,26 @@ def count_users(
     return query.count()
 
 
-def get_user_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100):
-    return (
-        db.query(models.Task)
-        .filter(models.Task.owner_id == user_id)
-        .order_by(models.Task.id.asc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+def get_user_tasks(
+    db: Session,
+    user_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    sort_by: schemas.UserTaskSortBy = "id",
+    sort_dir: schemas.TaskSortDir = "asc",
+):
+    sort_map = {
+        "id": models.Task.id,
+        "title": models.Task.title,
+        "completed": models.Task.completed,
+    }
+    sort_column = sort_map.get(sort_by, models.Task.id)
+    query = db.query(models.Task).filter(models.Task.owner_id == user_id)
+    if sort_dir == "desc":
+        query = query.order_by(sort_column.desc(), models.Task.id.desc())
+    else:
+        query = query.order_by(sort_column.asc(), models.Task.id.asc())
+    return query.offset(skip).limit(limit).all()
 
 
 def count_user_tasks(db: Session, user_id: int):
