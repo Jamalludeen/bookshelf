@@ -419,7 +419,12 @@ def toggle_task_completed(db: Session, task_id: int):
 
 def set_tasks_completed(db: Session, task_ids: list[int]):
     unique_ids = _unique_task_ids(task_ids)
-    tasks = db.query(models.Task).filter(models.Task.id.in_(unique_ids)).all()
+    tasks = (
+        db.query(models.Task)
+        .filter(models.Task.id.in_(unique_ids))
+        .order_by(models.Task.id.asc())
+        .all()
+    )
     if not tasks:
         return []
 
@@ -434,7 +439,12 @@ def set_tasks_completed(db: Session, task_ids: list[int]):
 
 def set_tasks_incomplete(db: Session, task_ids: list[int]):
     unique_ids = _unique_task_ids(task_ids)
-    tasks = db.query(models.Task).filter(models.Task.id.in_(unique_ids)).all()
+    tasks = (
+        db.query(models.Task)
+        .filter(models.Task.id.in_(unique_ids))
+        .order_by(models.Task.id.asc())
+        .all()
+    )
     if not tasks:
         return []
 
