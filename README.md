@@ -110,7 +110,7 @@ Base URLs are listed with common query parameters.
 - PATCH /users/{user_id}/status
 - GET /users/{user_id}
 - GET /users/{user_id}/summary
-- GET /users/{user_id}/tasks?skip=0&limit=100
+- GET /users/{user_id}/tasks?skip=0&limit=100&sort_by=id|title|completed&sort_dir=asc|desc
 - GET /users/{user_id}/tasks/export
 - DELETE /users/{user_id}
 
@@ -167,7 +167,7 @@ Notes:
 ## Response headers
 
 - `GET /users`, `GET /users/{user_id}/tasks`, and `GET /tasks` include `X-Total-Count` for total records matching filters.
-- Collection responses also include `X-Pagination-Offset` and `X-Pagination-Limit`.
+- Collection responses also include `X-Pagination-Offset`, `X-Pagination-Limit`, and one-based `X-Pagination-Page`.
 - All responses include `X-Request-ID`, `X-Process-Time`, `X-API-Version`, and `X-Service-Name` for tracing and diagnostics.
 - System endpoints also include `Cache-Control: no-store` to prevent stale health/status caching.
 - CSV export endpoints also use `Cache-Control: no-store` because exports may contain current user data.

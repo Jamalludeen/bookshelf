@@ -151,15 +151,26 @@ def count_users(
     return query.count()
 
 
-def get_user_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100):
-    return (
-        db.query(models.Task)
-        .filter(models.Task.owner_id == user_id)
-        .order_by(models.Task.id.asc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+def get_user_tasks(
+    db: Session,
+    user_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    sort_by: schemas.UserTaskSortBy = "id",
+    sort_dir: schemas.TaskSortDir = "asc",
+):
+    sort_map = {
+        "id": models.Task.id,
+        "title": models.Task.title,
+        "completed": models.Task.completed,
+    }
+    sort_column = sort_map.get(sort_by, models.Task.id)
+    query = db.query(models.Task).filter(models.Task.owner_id == user_id)
+    if sort_dir == "desc":
+        query = query.order_by(sort_column.desc(), models.Task.id.desc())
+    else:
+        query = query.order_by(sort_column.asc(), models.Task.id.asc())
+    return query.offset(skip).limit(limit).all()
 
 
 def count_user_tasks(db: Session, user_id: int):
@@ -310,6 +321,9 @@ def update_task(db: Session, task_id: int, task_update: schemas.TaskUpdate):
         return None
 
     update_data = task_update.dict(exclude_unset=True)
+    if not update_data:
+        return db_task
+
     if "title" in update_data and update_data["title"] is not None:
         update_data["title"] = _normalize_text(update_data["title"])
     if "description" in update_data:
@@ -408,7 +422,12 @@ def toggle_task_completed(db: Session, task_id: int):
 
 def set_tasks_completed(db: Session, task_ids: list[int]):
     unique_ids = _unique_task_ids(task_ids)
-    tasks = db.query(models.Task).filter(models.Task.id.in_(unique_ids)).all()
+    tasks = (
+        db.query(models.Task)
+        .filter(models.Task.id.in_(unique_ids))
+        .order_by(models.Task.id.asc())
+        .all()
+    )
     if not tasks:
         return []
 
@@ -423,7 +442,12 @@ def set_tasks_completed(db: Session, task_ids: list[int]):
 
 def set_tasks_incomplete(db: Session, task_ids: list[int]):
     unique_ids = _unique_task_ids(task_ids)
-    tasks = db.query(models.Task).filter(models.Task.id.in_(unique_ids)).all()
+    tasks = (
+        db.query(models.Task)
+        .filter(models.Task.id.in_(unique_ids))
+        .order_by(models.Task.id.asc())
+        .all()
+    )
     if not tasks:
         return []
 
