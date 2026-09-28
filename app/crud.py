@@ -228,6 +228,9 @@ def update_user_status(db: Session, user_id: int, is_active: bool):
     if not db_user:
         return None
 
+    if db_user.is_active == is_active:
+        return db_user
+
     db_user.is_active = is_active
     db.commit()
     db.refresh(db_user)
