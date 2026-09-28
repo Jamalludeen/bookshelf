@@ -94,6 +94,9 @@ class UserCreate(UserBase):
 class UserStatusUpdate(BaseModel):
     is_active: bool
 
+    class Config:
+        schema_extra = {"example": {"is_active": False}}
+
 class User(UserBase):
     id: int
     is_active: bool
