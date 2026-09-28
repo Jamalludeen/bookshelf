@@ -115,12 +115,14 @@ def http_exception_handler(request: Request, exc: HTTPException):
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request: Request, exc: RequestValidationError):
     logger.warning("Validation error: method=%s path=%s", request.method, request.url.path)
+    request_id = request.headers.get("x-request-id")
     return JSONResponse(
         status_code=422,
         content={
             "detail": "Validation error",
             "errors": exc.errors(),
             "path": request.url.path,
+            "request_id": request_id,
         },
     )
 
