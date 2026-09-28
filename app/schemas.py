@@ -152,6 +152,7 @@ class RootInfo(BaseModel):
 
 class VersionInfo(BaseModel):
     version: str
+    service: str
 
 
 class HealthInfo(BaseModel):

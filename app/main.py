@@ -202,7 +202,7 @@ def database_health(response: Response):
 
 @app.get("/version", tags=["system"], response_model=schemas.VersionInfo)
 def version():
-    return {"version": app.version}
+    return {"version": app.version, "service": SERVICE_NAME}
 
 
 @app.get("/stats", tags=["system"], response_model=schemas.SystemStats)
