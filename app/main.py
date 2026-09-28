@@ -150,6 +150,7 @@ def health_check(response: Response):
     checked_at = datetime.now(timezone.utc)
     if not _is_database_reachable():
         response.status_code = 503
+        response.headers["X-Health-Status"] = "degraded"
         return {
             "status": "degraded",
             "database": "unreachable",
@@ -157,6 +158,7 @@ def health_check(response: Response):
             "checked_at": checked_at,
         }
 
+    response.headers["X-Health-Status"] = "ok"
     return {
         "status": "ok",
         "database": "reachable",
