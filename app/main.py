@@ -218,9 +218,12 @@ def system_stats():
 
 
 @app.get("/uptime", tags=["system"], response_model=schemas.UptimeInfo)
-def uptime_info():
+def uptime_info(response: Response):
     now = datetime.now(timezone.utc)
+    uptime_seconds = (now - APP_STARTED_AT).total_seconds()
+    response.headers["X-Uptime-Seconds"] = f"{uptime_seconds:.3f}"
+    response.headers["X-Started-At"] = APP_STARTED_AT.isoformat()
     return {
         "started_at": APP_STARTED_AT,
-        "uptime_seconds": (now - APP_STARTED_AT).total_seconds(),
+        "uptime_seconds": uptime_seconds,
     }
