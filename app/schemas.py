@@ -61,6 +61,9 @@ class TaskUpdate(BaseModel):
 class TaskBulkUpdateRequest(BaseModel):
     task_ids: List[int] = Field(min_items=1)
 
+    class Config:
+        schema_extra = {"example": {"task_ids": [1, 2, 3]}}
+
     @validator("task_ids")
     def validate_task_ids(cls, value: List[int]) -> List[int]:
         # Reject invalid IDs early before DB access.
