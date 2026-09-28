@@ -100,12 +100,14 @@ async def disable_cache_for_system_endpoints(request: Request, call_next):
 @app.exception_handler(HTTPException)
 def http_exception_handler(request: Request, exc: HTTPException):
     logger.error("HTTPException: status=%s detail=%s path=%s", exc.status_code, exc.detail, request.url.path)
+    request_id = request.headers.get("x-request-id")
     return JSONResponse(
         status_code=exc.status_code,
         content={
             # Include path to help clients correlate failures quickly.
             "detail": exc.detail,
             "path": request.url.path,
+            "request_id": request_id,
         },
     )
 
