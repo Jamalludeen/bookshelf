@@ -137,6 +137,7 @@ def root():
     return {
         "message": "Welcome to TaskMaster",
         "version": app.version,
+        "service": SERVICE_NAME,
     }
 
 

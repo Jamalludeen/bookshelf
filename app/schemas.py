@@ -147,6 +147,7 @@ class Message(BaseModel):
 class RootInfo(BaseModel):
     message: str
     version: str
+    service: str
 
 
 class VersionInfo(BaseModel):
