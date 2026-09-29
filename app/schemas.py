@@ -61,6 +61,9 @@ class TaskUpdate(BaseModel):
 class TaskBulkUpdateRequest(BaseModel):
     task_ids: List[int] = Field(min_items=1)
 
+    class Config:
+        schema_extra = {"example": {"task_ids": [1, 2, 3]}}
+
     @validator("task_ids")
     def validate_task_ids(cls, value: List[int]) -> List[int]:
         # Reject invalid IDs early before DB access.
@@ -93,6 +96,9 @@ class UserCreate(UserBase):
 
 class UserStatusUpdate(BaseModel):
     is_active: bool
+
+    class Config:
+        schema_extra = {"example": {"is_active": False}}
 
 class User(UserBase):
     id: int
@@ -141,10 +147,12 @@ class Message(BaseModel):
 class RootInfo(BaseModel):
     message: str
     version: str
+    service: str
 
 
 class VersionInfo(BaseModel):
     version: str
+    service: str
 
 
 class HealthInfo(BaseModel):

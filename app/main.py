@@ -100,12 +100,14 @@ async def disable_cache_for_system_endpoints(request: Request, call_next):
 @app.exception_handler(HTTPException)
 def http_exception_handler(request: Request, exc: HTTPException):
     logger.error("HTTPException: status=%s detail=%s path=%s", exc.status_code, exc.detail, request.url.path)
+    request_id = request.headers.get("x-request-id")
     return JSONResponse(
         status_code=exc.status_code,
         content={
             # Include path to help clients correlate failures quickly.
             "detail": exc.detail,
             "path": request.url.path,
+            "request_id": request_id,
         },
     )
 
@@ -113,12 +115,14 @@ def http_exception_handler(request: Request, exc: HTTPException):
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request: Request, exc: RequestValidationError):
     logger.warning("Validation error: method=%s path=%s", request.method, request.url.path)
+    request_id = request.headers.get("x-request-id")
     return JSONResponse(
         status_code=422,
         content={
             "detail": "Validation error",
             "errors": exc.errors(),
             "path": request.url.path,
+            "request_id": request_id,
         },
     )
 
@@ -137,6 +141,7 @@ def root():
     return {
         "message": "Welcome to TaskMaster",
         "version": app.version,
+        "service": SERVICE_NAME,
     }
 
 
@@ -145,6 +150,7 @@ def health_check(response: Response):
     checked_at = datetime.now(timezone.utc)
     if not _is_database_reachable():
         response.status_code = 503
+        response.headers["X-Health-Status"] = "degraded"
         return {
             "status": "degraded",
             "database": "unreachable",
@@ -152,6 +158,7 @@ def health_check(response: Response):
             "checked_at": checked_at,
         }
 
+    response.headers["X-Health-Status"] = "ok"
     return {
         "status": "ok",
         "database": "reachable",
@@ -201,7 +208,7 @@ def database_health(response: Response):
 
 @app.get("/version", tags=["system"], response_model=schemas.VersionInfo)
 def version():
-    return {"version": app.version}
+    return {"version": app.version, "service": SERVICE_NAME}
 
 
 @app.get("/stats", tags=["system"], response_model=schemas.SystemStats)
@@ -211,9 +218,12 @@ def system_stats():
 
 
 @app.get("/uptime", tags=["system"], response_model=schemas.UptimeInfo)
-def uptime_info():
+def uptime_info(response: Response):
     now = datetime.now(timezone.utc)
+    uptime_seconds = (now - APP_STARTED_AT).total_seconds()
+    response.headers["X-Uptime-Seconds"] = f"{uptime_seconds:.3f}"
+    response.headers["X-Started-At"] = APP_STARTED_AT.isoformat()
     return {
         "started_at": APP_STARTED_AT,
-        "uptime_seconds": (now - APP_STARTED_AT).total_seconds(),
+        "uptime_seconds": uptime_seconds,
     }
