@@ -197,6 +197,9 @@ class TaskStatusInfo(BaseModel):
     task_id: int
     completed: bool
 
+    class Config:
+        schema_extra = {"example": {"task_id": 12, "completed": True}}
+
 
 class ExistsInfo(BaseModel):
     exists: bool
