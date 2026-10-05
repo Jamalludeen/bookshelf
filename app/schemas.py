@@ -203,4 +203,7 @@ class TaskStatusInfo(BaseModel):
 
 class ExistsInfo(BaseModel):
     exists: bool
+
+    class Config:
+        schema_extra = {"example": {"exists": True}}
         
