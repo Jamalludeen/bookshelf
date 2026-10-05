@@ -124,6 +124,9 @@ class TaskSummary(BaseModel):
     completed: int
     pending: int
 
+    class Config:
+        schema_extra = {"example": {"total": 10, "completed": 6, "pending": 4}}
+
 
 class UserSummary(BaseModel):
     total: int
