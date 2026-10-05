@@ -195,12 +195,14 @@ def reopen_tasks_bulk(
 @router.delete("/bulk", response_model=schemas.Message, status_code=status.HTTP_200_OK)
 def delete_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
+    response: Response,
     db: Session = Depends(database.get_db),
 ):
     _ensure_unique_task_ids(payload.task_ids)
     deleted_count = crud.delete_tasks(db=db, task_ids=payload.task_ids)
     if deleted_count == 0:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    response.headers["X-Deleted-Count"] = str(deleted_count)
     return {"detail": f"Deleted {deleted_count} task(s) successfully"}
 
 
