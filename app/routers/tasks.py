@@ -175,6 +175,7 @@ def complete_tasks_bulk(
     if not tasks:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
     response.headers["X-Updated-Count"] = str(len(tasks))
+    response.headers["X-Bulk-Operation"] = "complete"
     return tasks
 
 
@@ -189,6 +190,7 @@ def reopen_tasks_bulk(
     if not tasks:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
     response.headers["X-Updated-Count"] = str(len(tasks))
+    response.headers["X-Bulk-Operation"] = "reopen"
     return tasks
 
 
@@ -203,6 +205,7 @@ def delete_tasks_bulk(
     if deleted_count == 0:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
     response.headers["X-Deleted-Count"] = str(deleted_count)
+    response.headers["X-Bulk-Operation"] = "delete"
     return {"detail": f"Deleted {deleted_count} task(s) successfully"}
 
 
