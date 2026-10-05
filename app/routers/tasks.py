@@ -164,7 +164,7 @@ def read_pending_tasks(
     return tasks
 
 
-@router.patch("/bulk/complete", response_model=List[schemas.Task])
+@router.patch("/bulk/complete", response_model=List[schemas.Task], summary="Complete multiple tasks")
 def complete_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
     response: Response,
@@ -179,7 +179,7 @@ def complete_tasks_bulk(
     return tasks
 
 
-@router.patch("/bulk/reopen", response_model=List[schemas.Task])
+@router.patch("/bulk/reopen", response_model=List[schemas.Task], summary="Reopen multiple tasks")
 def reopen_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
     response: Response,
@@ -194,7 +194,7 @@ def reopen_tasks_bulk(
     return tasks
 
 
-@router.delete("/bulk", response_model=schemas.Message, status_code=status.HTTP_200_OK)
+@router.delete("/bulk", response_model=schemas.Message, status_code=status.HTTP_200_OK, summary="Delete multiple tasks")
 def delete_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
     response: Response,
