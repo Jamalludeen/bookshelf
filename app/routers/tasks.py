@@ -274,7 +274,7 @@ def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get
     return task
 
 
-@router.get("/{task_id}/status", response_model=schemas.TaskStatusInfo)
+@router.get("/{task_id}/status", response_model=schemas.TaskStatusInfo, summary="Get task completion status")
 def read_task_status(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.get_task_by_id(db=db, task_id=task_id)
     if not task:
