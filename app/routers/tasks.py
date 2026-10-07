@@ -164,39 +164,48 @@ def read_pending_tasks(
     return tasks
 
 
-@router.patch("/bulk/complete", response_model=List[schemas.Task])
+@router.patch("/bulk/complete", response_model=List[schemas.Task], summary="Complete multiple tasks")
 def complete_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
+    response: Response,
     db: Session = Depends(database.get_db),
 ):
     _ensure_unique_task_ids(payload.task_ids)
     tasks = crud.set_tasks_completed(db=db, task_ids=payload.task_ids)
     if not tasks:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    response.headers["X-Updated-Count"] = str(len(tasks))
+    response.headers["X-Bulk-Operation"] = "complete"
     return tasks
 
 
-@router.patch("/bulk/reopen", response_model=List[schemas.Task])
+@router.patch("/bulk/reopen", response_model=List[schemas.Task], summary="Reopen multiple tasks")
 def reopen_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
+    response: Response,
     db: Session = Depends(database.get_db),
 ):
     _ensure_unique_task_ids(payload.task_ids)
     tasks = crud.set_tasks_incomplete(db=db, task_ids=payload.task_ids)
     if not tasks:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    response.headers["X-Updated-Count"] = str(len(tasks))
+    response.headers["X-Bulk-Operation"] = "reopen"
     return tasks
 
 
-@router.delete("/bulk", response_model=schemas.Message, status_code=status.HTTP_200_OK)
+@router.delete("/bulk", response_model=schemas.Message, status_code=status.HTTP_200_OK, summary="Delete multiple tasks")
 def delete_tasks_bulk(
     payload: schemas.TaskBulkUpdateRequest,
+    response: Response,
     db: Session = Depends(database.get_db),
 ):
     _ensure_unique_task_ids(payload.task_ids)
     deleted_count = crud.delete_tasks(db=db, task_ids=payload.task_ids)
     if deleted_count == 0:
         raise HTTPException(status_code=404, detail="No tasks found for provided IDs")
+    response.headers["X-Deleted-Count"] = str(deleted_count)
+    response.headers["X-Bulk-Operation"] = "delete"
     return {"detail": f"Deleted {deleted_count} task(s) successfully"}
 
 
@@ -265,7 +274,7 @@ def read_task(task_id: int = Path(..., ge=1), db: Session = Depends(database.get
     return task
 
 
-@router.get("/{task_id}/status", response_model=schemas.TaskStatusInfo)
+@router.get("/{task_id}/status", response_model=schemas.TaskStatusInfo, summary="Get task completion status")
 def read_task_status(task_id: int = Path(..., ge=1), db: Session = Depends(database.get_db)):
     task = crud.get_task_by_id(db=db, task_id=task_id)
     if not task:

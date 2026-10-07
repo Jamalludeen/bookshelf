@@ -145,7 +145,7 @@ def root():
     }
 
 
-@app.get("/health", tags=["system"], response_model=schemas.HealthInfo)
+@app.get("/health", tags=["system"], response_model=schemas.HealthInfo, summary="Check application health")
 def health_check(response: Response):
     checked_at = datetime.now(timezone.utc)
     if not _is_database_reachable():
@@ -167,7 +167,7 @@ def health_check(response: Response):
     }
 
 
-@app.get("/health/live", tags=["system"], response_model=schemas.LivenessInfo)
+@app.get("/health/live", tags=["system"], response_model=schemas.LivenessInfo, summary="Check process liveness")
 def liveness_check():
     return {
         "status": "alive",
@@ -176,7 +176,7 @@ def liveness_check():
     }
 
 
-@app.get("/health/ready", tags=["system"], response_model=schemas.ReadinessInfo)
+@app.get("/health/ready", tags=["system"], response_model=schemas.ReadinessInfo, summary="Check database readiness")
 def readiness_check(response: Response):
     checked_at = datetime.now(timezone.utc)
     if not _is_database_reachable():

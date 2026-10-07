@@ -124,6 +124,9 @@ class TaskSummary(BaseModel):
     completed: int
     pending: int
 
+    class Config:
+        schema_extra = {"example": {"total": 10, "completed": 6, "pending": 4}}
+
 
 class UserSummary(BaseModel):
     total: int
@@ -197,7 +200,13 @@ class TaskStatusInfo(BaseModel):
     task_id: int
     completed: bool
 
+    class Config:
+        schema_extra = {"example": {"task_id": 12, "completed": True}}
+
 
 class ExistsInfo(BaseModel):
     exists: bool
+
+    class Config:
+        schema_extra = {"example": {"exists": True}}
         

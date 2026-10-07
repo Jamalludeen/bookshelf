@@ -172,6 +172,7 @@ Notes:
 - System endpoints also include `Cache-Control: no-store` to prevent stale health/status caching.
 - CSV export endpoints also use `Cache-Control: no-store` because exports may contain current user data.
 - CSV export endpoints include `X-Export-Row-Count` with the number of data rows in the file.
+- Bulk task mutations include `X-Bulk-Operation` and an affected-row count header.
 - Send `X-Request-ID` in requests to propagate your own correlation id across logs.
 - HTTP and validation errors echo the supplied request ID in their JSON body.
 - `/health` exposes `X-Health-Status`; `/uptime` exposes `X-Uptime-Seconds` and `X-Started-At`.
