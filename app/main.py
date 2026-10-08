@@ -52,7 +52,12 @@ def on_startup():
     # This helps confirm which configuration the app booted with.
     # Keep startup logs short so they stay readable in local terminals.
     # The version string makes it obvious which build is running.
-    logger.info("startup: version=%s db=%s", app.version, masked)
+    logger.info(
+        "startup: version=%s db=%s dialect=%s",
+        app.version,
+        masked,
+        database.database_dialect(),
+    )
 
 
 @app.middleware("http")
