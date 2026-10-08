@@ -202,6 +202,14 @@ class UptimeInfo(BaseModel):
     started_at: datetime
     uptime_seconds: float
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "started_at": "2026-10-08T11:45:00Z",
+                "uptime_seconds": 900.5,
+            }
+        }
+
 
 class DatabaseHealthInfo(BaseModel):
     reachable: bool
