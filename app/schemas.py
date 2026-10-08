@@ -185,6 +185,18 @@ class SystemStats(BaseModel):
     tasks_completed: int
     tasks_pending: int
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "users_total": 25,
+                "users_active": 22,
+                "users_inactive": 3,
+                "tasks_total": 80,
+                "tasks_completed": 52,
+                "tasks_pending": 28,
+            }
+        }
+
 
 class UptimeInfo(BaseModel):
     started_at: datetime
