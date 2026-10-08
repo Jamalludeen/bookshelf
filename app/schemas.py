@@ -196,6 +196,15 @@ class DatabaseHealthInfo(BaseModel):
     dialect: str
     checked_at: datetime
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "reachable": True,
+                "dialect": "sqlite",
+                "checked_at": "2026-10-08T12:00:00Z",
+            }
+        }
+
 
 class TaskStatusInfo(BaseModel):
     task_id: int
