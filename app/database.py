@@ -31,6 +31,11 @@ def masked_database_url() -> str:
     # SQLite URLs and malformed inputs fall back to the original value.
     return url
 
+
+def database_dialect() -> str:
+    """Return the SQLAlchemy dialect name for the configured database."""
+    return engine.dialect.name
+
 engine = create_engine(
     # Pull from env when present to keep local/prod config flexible.
     get_database_url(),
