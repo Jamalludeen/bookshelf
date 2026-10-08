@@ -212,7 +212,7 @@ def version():
     return {"version": app.version, "service": SERVICE_NAME}
 
 
-@app.get("/stats", tags=["system"], response_model=schemas.SystemStats)
+@app.get("/stats", tags=["system"], response_model=schemas.SystemStats, summary="Get system statistics")
 def system_stats():
     with database.SessionLocal() as db:
         return crud.get_system_stats(db=db)
