@@ -218,7 +218,7 @@ def system_stats():
         return crud.get_system_stats(db=db)
 
 
-@app.get("/uptime", tags=["system"], response_model=schemas.UptimeInfo)
+@app.get("/uptime", tags=["system"], response_model=schemas.UptimeInfo, summary="Get process uptime")
 def uptime_info(response: Response):
     now = datetime.now(timezone.utc)
     uptime_seconds = (now - APP_STARTED_AT).total_seconds()
