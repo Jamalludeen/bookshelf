@@ -194,7 +194,7 @@ def readiness_check(response: Response):
     }
 
 
-@app.get("/health/db", tags=["system"], response_model=schemas.DatabaseHealthInfo)
+@app.get("/health/db", tags=["system"], response_model=schemas.DatabaseHealthInfo, summary="Check database connectivity")
 def database_health(response: Response):
     checked_at = datetime.now(timezone.utc)
     reachable = _is_database_reachable()
