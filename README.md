@@ -47,7 +47,7 @@ Health details:
 
 curl -s http://127.0.0.1:8000/health/db
 
-Tip: `/health/db` is the fastest way to verify database connectivity.
+Tip: `/health/db` is the fastest way to verify database connectivity and reports the configured SQLAlchemy dialect.
 
 Readiness probe:
 
