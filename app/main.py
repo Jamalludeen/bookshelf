@@ -202,6 +202,7 @@ def database_health(response: Response):
         response.status_code = 503
     return {
         "reachable": reachable,
+        "dialect": database.database_dialect(),
         "checked_at": checked_at,
     }
 

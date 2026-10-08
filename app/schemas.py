@@ -193,6 +193,7 @@ class UptimeInfo(BaseModel):
 
 class DatabaseHealthInfo(BaseModel):
     reachable: bool
+    dialect: str
     checked_at: datetime
 
 
