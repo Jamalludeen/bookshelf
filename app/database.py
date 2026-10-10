@@ -3,6 +3,7 @@ from collections.abc import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.engine import make_url
 import os
+from typing import Any
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
@@ -32,7 +33,7 @@ def database_dialect() -> str:
     return engine.dialect.name
 
 DATABASE_URL = get_database_url()
-engine_options = {
+engine_options: dict[str, Any] = {
     "pool_pre_ping": True,
     "pool_recycle": 1800,
 }
