@@ -176,6 +176,7 @@ Notes:
 - Send `X-Request-ID` in requests to propagate your own correlation id across logs.
 - HTTP and validation errors echo the supplied request ID in their JSON body.
 - `/health` exposes `X-Health-Status`; `/uptime` exposes `X-Uptime-Seconds` and `X-Started-At`.
+- `/health/db` exposes `X-Database-Dialect`; readiness and liveness probes expose `X-Readiness-Status` and `X-Liveness-Status`.
 
 ## Export support
 
