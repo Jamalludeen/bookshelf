@@ -66,6 +66,7 @@ async def add_observability_headers(request: Request, call_next):
     # Fall back to a generated UUID when clients do not provide one.
     # This keeps logs and client traces aligned across requests.
     request_id = request.headers.get("x-request-id", str(uuid4()))
+    request.state.request_id = request_id
     start_time = perf_counter()
     response = await call_next(request)
     process_time = perf_counter() - start_time
@@ -105,7 +106,7 @@ async def disable_cache_for_system_endpoints(request: Request, call_next):
 @app.exception_handler(HTTPException)
 def http_exception_handler(request: Request, exc: HTTPException):
     logger.error("HTTPException: status=%s detail=%s path=%s", exc.status_code, exc.detail, request.url.path)
-    request_id = request.headers.get("x-request-id")
+    request_id = getattr(request.state, "request_id", request.headers.get("x-request-id"))
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -120,7 +121,7 @@ def http_exception_handler(request: Request, exc: HTTPException):
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request: Request, exc: RequestValidationError):
     logger.warning("Validation error: method=%s path=%s", request.method, request.url.path)
-    request_id = request.headers.get("x-request-id")
+    request_id = getattr(request.state, "request_id", request.headers.get("x-request-id"))
     return JSONResponse(
         status_code=422,
         content={
