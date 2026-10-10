@@ -92,6 +92,7 @@ App version: 0.1.2
 - This project uses SQLAlchemy models with a simple CRUD layer.
 - See `.env.example` for environment variable defaults.
 - Override `DATABASE_URL` in your environment to switch databases.
+- Startup logs mask database passwords using SQLAlchemy URL parsing.
 
 ## Endpoints
 
@@ -156,6 +157,7 @@ Notes:
 - `GET /health` returns `503` when the database is unreachable.
 - `GET /health/live` is a lightweight process liveness probe.
 - `GET /health/ready` is a readiness probe that verifies database access.
+- Probe response examples are available in the generated `/docs` and `/redoc` references.
 - `GET /uptime` returns process start time and uptime in seconds.
 - System endpoints are grouped under the `system` tag in OpenAPI docs.
 
@@ -176,6 +178,7 @@ Notes:
 - Send `X-Request-ID` in requests to propagate your own correlation id across logs.
 - HTTP and validation errors echo the supplied request ID in their JSON body.
 - `/health` exposes `X-Health-Status`; `/uptime` exposes `X-Uptime-Seconds` and `X-Started-At`.
+- `/health/db` exposes `X-Database-Dialect`; readiness and liveness probes expose `X-Readiness-Status` and `X-Liveness-Status`.
 
 ## Export support
 
