@@ -187,12 +187,14 @@ def readiness_check(response: Response):
     checked_at = datetime.now(timezone.utc)
     if not _is_database_reachable():
         response.status_code = 503
+        response.headers["X-Readiness-Status"] = "not_ready"
         return {
             "status": "not_ready",
             "database": "unreachable",
             "checked_at": checked_at,
         }
 
+    response.headers["X-Readiness-Status"] = "ready"
     return {
         "status": "ready",
         "database": "reachable",
