@@ -142,7 +142,7 @@ def _is_database_reachable() -> bool:
         return False
     return True
 
-@app.get("/", tags=["system"], response_model=schemas.RootInfo)
+@app.get("/", tags=["system"], response_model=schemas.RootInfo, summary="Get API welcome information")
 def root():
     return {
         "message": "Welcome to TaskMaster",
@@ -217,7 +217,7 @@ def database_health(response: Response):
     }
 
 
-@app.get("/version", tags=["system"], response_model=schemas.VersionInfo)
+@app.get("/version", tags=["system"], response_model=schemas.VersionInfo, summary="Get API version")
 def version():
     return {"version": app.version, "service": SERVICE_NAME}
 
