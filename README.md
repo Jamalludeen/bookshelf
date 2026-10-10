@@ -157,6 +157,7 @@ Notes:
 - `GET /health` returns `503` when the database is unreachable.
 - `GET /health/live` is a lightweight process liveness probe.
 - `GET /health/ready` is a readiness probe that verifies database access.
+- Probe response examples are available in the generated `/docs` and `/redoc` references.
 - `GET /uptime` returns process start time and uptime in seconds.
 - System endpoints are grouped under the `system` tag in OpenAPI docs.
 
