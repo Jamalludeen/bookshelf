@@ -92,6 +92,7 @@ App version: 0.1.2
 - This project uses SQLAlchemy models with a simple CRUD layer.
 - See `.env.example` for environment variable defaults.
 - Override `DATABASE_URL` in your environment to switch databases.
+- Startup logs mask database passwords using SQLAlchemy URL parsing.
 
 ## Endpoints
 
