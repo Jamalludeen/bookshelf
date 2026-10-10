@@ -204,6 +204,7 @@ def readiness_check(response: Response):
 def database_health(response: Response):
     checked_at = datetime.now(timezone.utc)
     reachable = _is_database_reachable()
+    response.headers["X-Database-Dialect"] = database.database_dialect()
     if not reachable:
         response.status_code = 503
     return {
