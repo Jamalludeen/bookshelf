@@ -170,11 +170,29 @@ class LivenessInfo(BaseModel):
     version: str
     checked_at: datetime
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "status": "alive",
+                "version": "0.1.2",
+                "checked_at": "2026-10-10T12:00:00Z",
+            }
+        }
+
 
 class ReadinessInfo(BaseModel):
     status: Literal["ready", "not_ready"]
     database: Literal["reachable", "unreachable"]
     checked_at: datetime
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "status": "ready",
+                "database": "reachable",
+                "checked_at": "2026-10-10T12:00:00Z",
+            }
+        }
 
 
 class SystemStats(BaseModel):
