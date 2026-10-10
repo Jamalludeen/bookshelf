@@ -36,15 +36,15 @@ def database_dialect() -> str:
     """Return the SQLAlchemy dialect name for the configured database."""
     return engine.dialect.name
 
-engine = create_engine(
-    # Pull from env when present to keep local/prod config flexible.
-    get_database_url(),
-    # Needed for SQLite usage from FastAPI request threads.
-    connect_args={"check_same_thread": False, "timeout": 10},
-    # Pre-ping avoids stale pooled connections after DB restarts.
-    pool_pre_ping=True,
-    pool_recycle=1800,
-)
+DATABASE_URL = get_database_url()
+engine_options = {
+    "pool_pre_ping": True,
+    "pool_recycle": 1800,
+}
+if DATABASE_URL.startswith("sqlite"):
+    engine_options["connect_args"] = {"check_same_thread": False, "timeout": 10}
+
+engine = create_engine(DATABASE_URL, **engine_options)
 
 SessionLocal = sessionmaker(
     autocommit=False,
