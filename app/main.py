@@ -174,7 +174,8 @@ def health_check(response: Response):
 
 
 @app.get("/health/live", tags=["system"], response_model=schemas.LivenessInfo, summary="Check process liveness")
-def liveness_check():
+def liveness_check(response: Response):
+    response.headers["X-Liveness-Status"] = "alive"
     return {
         "status": "alive",
         "version": app.version,
