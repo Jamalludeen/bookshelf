@@ -1,7 +1,9 @@
 from collections.abc import Generator
 
 from sqlalchemy import create_engine
+from sqlalchemy.engine import make_url
 import os
+from typing import Any
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
@@ -18,13 +20,7 @@ def masked_database_url() -> str:
     """Return a masked/sanitized database URL for safe logging (hide credentials)."""
     url = get_database_url()
     try:
-        # Expected form for non-sqlite URLs: scheme://user:pass@host/...
-        if "@" in url and ":" in url.split("@")[0]:
-            # mask user:pass portion
-            head, tail = url.split("@", 1)
-            if ":" in head:
-                user, _ = head.split(":", 1)
-                return f"{user}:*****@{tail}"
+        return make_url(url).render_as_string(hide_password=True)
     except Exception:
         pass
     # Leave sqlite URLs unchanged so local paths stay readable.
@@ -36,15 +32,15 @@ def database_dialect() -> str:
     """Return the SQLAlchemy dialect name for the configured database."""
     return engine.dialect.name
 
-engine = create_engine(
-    # Pull from env when present to keep local/prod config flexible.
-    get_database_url(),
-    # Needed for SQLite usage from FastAPI request threads.
-    connect_args={"check_same_thread": False, "timeout": 10},
-    # Pre-ping avoids stale pooled connections after DB restarts.
-    pool_pre_ping=True,
-    pool_recycle=1800,
-)
+DATABASE_URL = get_database_url()
+engine_options: dict[str, Any] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 1800,
+}
+if DATABASE_URL.startswith("sqlite"):
+    engine_options["connect_args"] = {"check_same_thread": False, "timeout": 10}
+
+engine = create_engine(DATABASE_URL, **engine_options)
 
 SessionLocal = sessionmaker(
     autocommit=False,

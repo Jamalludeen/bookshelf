@@ -66,6 +66,7 @@ async def add_observability_headers(request: Request, call_next):
     # Fall back to a generated UUID when clients do not provide one.
     # This keeps logs and client traces aligned across requests.
     request_id = request.headers.get("x-request-id", str(uuid4()))
+    request.state.request_id = request_id
     start_time = perf_counter()
     response = await call_next(request)
     process_time = perf_counter() - start_time
@@ -105,7 +106,7 @@ async def disable_cache_for_system_endpoints(request: Request, call_next):
 @app.exception_handler(HTTPException)
 def http_exception_handler(request: Request, exc: HTTPException):
     logger.error("HTTPException: status=%s detail=%s path=%s", exc.status_code, exc.detail, request.url.path)
-    request_id = request.headers.get("x-request-id")
+    request_id = getattr(request.state, "request_id", request.headers.get("x-request-id"))
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -120,7 +121,7 @@ def http_exception_handler(request: Request, exc: HTTPException):
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request: Request, exc: RequestValidationError):
     logger.warning("Validation error: method=%s path=%s", request.method, request.url.path)
-    request_id = request.headers.get("x-request-id")
+    request_id = getattr(request.state, "request_id", request.headers.get("x-request-id"))
     return JSONResponse(
         status_code=422,
         content={
@@ -141,7 +142,7 @@ def _is_database_reachable() -> bool:
         return False
     return True
 
-@app.get("/", tags=["system"], response_model=schemas.RootInfo)
+@app.get("/", tags=["system"], response_model=schemas.RootInfo, summary="Get API welcome information")
 def root():
     return {
         "message": "Welcome to TaskMaster",
@@ -173,7 +174,8 @@ def health_check(response: Response):
 
 
 @app.get("/health/live", tags=["system"], response_model=schemas.LivenessInfo, summary="Check process liveness")
-def liveness_check():
+def liveness_check(response: Response):
+    response.headers["X-Liveness-Status"] = "alive"
     return {
         "status": "alive",
         "version": app.version,
@@ -186,12 +188,14 @@ def readiness_check(response: Response):
     checked_at = datetime.now(timezone.utc)
     if not _is_database_reachable():
         response.status_code = 503
+        response.headers["X-Readiness-Status"] = "not_ready"
         return {
             "status": "not_ready",
             "database": "unreachable",
             "checked_at": checked_at,
         }
 
+    response.headers["X-Readiness-Status"] = "ready"
     return {
         "status": "ready",
         "database": "reachable",
@@ -203,6 +207,7 @@ def readiness_check(response: Response):
 def database_health(response: Response):
     checked_at = datetime.now(timezone.utc)
     reachable = _is_database_reachable()
+    response.headers["X-Database-Dialect"] = database.database_dialect()
     if not reachable:
         response.status_code = 503
     return {
@@ -212,7 +217,7 @@ def database_health(response: Response):
     }
 
 
-@app.get("/version", tags=["system"], response_model=schemas.VersionInfo)
+@app.get("/version", tags=["system"], response_model=schemas.VersionInfo, summary="Get API version")
 def version():
     return {"version": app.version, "service": SERVICE_NAME}
 
